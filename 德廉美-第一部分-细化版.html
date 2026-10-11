@@ -110,6 +110,15 @@ button{font:inherit;border:0;cursor:pointer;transition:.18s}
 .party span{background:#d8c39766;border:1px solid #b9975d88;border-radius:99px;padding:3px 10px;font-size:12px;color:#5d4a33}
 .party span.gone{opacity:.4;text-decoration:line-through}
 
+/* ===== 关系值 ===== */
+.favor{display:flex;flex-direction:column;gap:7px;flex:0 0 auto}
+.favor-row{display:flex;align-items:center;gap:8px;font-size:12px;color:#5d4a33}
+.favor-row>span{flex:0 0 58px}
+.favor-bar{flex:1 1 auto;height:7px;border-radius:99px;background:#d8c39766;overflow:hidden}
+.favor-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#c9a86a,var(--accent))}
+.favor-row>b{flex:0 0 26px;text-align:right;font-variant-numeric:tabular-nums;color:var(--accent)}
+.favor-row.gone{opacity:.45;text-decoration:line-through}
+
 /* ===== 战斗嵌入剧情页 ===== */
 .battle-card{width:100%;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(5px,1.2vh,14px);border:1px solid #c3a265;border-radius:7px;background:#fffaf0d9;box-shadow:0 8px 20px #65451d18,inset 0 1px #fff;padding:clamp(12px,2.2vh,28px) clamp(14px,2.5vw,32px)}
 .battle-card>p{font-size:clamp(12px,1.3vw,15px);line-height:1.6;text-align:center;color:#594d3c;margin:0}
@@ -209,6 +218,9 @@ button{font:inherit;border:0;cursor:pointer;transition:.18s}
       <p><b>同行者</b></p>
       <div id="partyInfo" class="party"></div>
       <div class="rule"></div>
+      <p><b>关系</b></p>
+      <div id="favorInfo" class="favor"></div>
+      <div class="rule"></div>
       <div id="sceneLog" class="log"></div>
     </aside>
   </div>
@@ -265,6 +277,7 @@ function reset(){
   F = {
     drinkRevealed:false, peace:false, leaderWay:null, duel:null,
     margaSorty:0, agnes:false, pierre:false,
+    mFavor:50, pFavor:50,
     margaretLeft:false, linaStays:true, stage:0
   };
   LOG = [];
@@ -324,11 +337,31 @@ function partyHTML(){
   if(F.pierre) all.push('皮埃尔');
   return all.map(n=>'<span'+(cur.indexOf(n)<0?' class="gone"':'')+'>'+n+'</span>').join('');
 }
+
+/* ---------- 关系值（玛格丽特 / 菲利普） ----------
+   分支触发仍严格按细纲：用 margaSorty（出战次数）与 duel 来判定，
+   mFavor / pFavor 只是把「同伴对你的态度」显式数值化，供玩家读数，不改变分支。 */
+function favor(dm, dp){
+  F.mFavor = Math.max(0, Math.min(100, F.mFavor + dm));
+  F.pFavor = Math.max(0, Math.min(100, F.pFavor + dp));
+}
+function favorLabel(v){
+  return v>=80?'推心置腹':v>=60?'亲近':v>=40?'平常':v>=20?'冷淡':'疏远';
+}
+function favorHTML(){
+  return [
+    { n:'玛格丽特', v:F.mFavor, gone:F.margaretLeft },
+    { n:'菲利普',   v:F.pFavor, gone:false }
+  ].map(x=>'<div class="favor-row'+(x.gone?' gone':'')+'"><span>'+x.n+'</span>'
+    +'<div class="favor-bar"><i style="width:'+x.v+'%"></i></div>'
+    +'<b title="'+favorLabel(x.v)+'">'+x.v+'</b></div>').join('');
+}
 function paintSide(){
   $('sceneStats').innerHTML = statHTML();
   const p = partyHTML();
   $('partyInfo').innerHTML = p;
   $('scPartyHead').innerHTML = p;
+  $('favorInfo').innerHTML = favorHTML();
   $('sceneLog').innerHTML = logHTML(14);
 }
 
@@ -653,8 +686,8 @@ function prepDuel(){
           '玛格丽特十分生气，当庭就要与菲利普决斗。菲利普则说，他不与女士进行决斗——「而且大战前夕自己人内讧，像什么样子」。',
           '玛格丽特看向你。'],
     choices:[
-      { label:'主持发起这场决斗', desc:'让这一剑有个结果', go:()=>{ F.duel='yes'; say('战备：主持菲利普与玛格丽特的决斗'); prepAssign(); } },
-      { label:'让两人都消停点', desc:'继续动员', go:()=>{ F.duel='no'; say('战备：压下了这场决斗'); prepAssign(); } } ] });
+      { label:'主持发起这场决斗', desc:'让这一剑有个结果', go:()=>{ F.duel='yes'; favor(10,-10); say('战备：主持菲利普与玛格丽特的决斗'); prepAssign(); } },
+      { label:'让两人都消停点', desc:'继续动员', go:()=>{ F.duel='no'; favor(-10,5); say('战备：压下了这场决斗'); prepAssign(); } } ] });
 }
 function prepAssign(){
   const t = F.duel === 'yes'
@@ -681,8 +714,8 @@ function war1Branch3(){
        '你很快召集了德廉美众人。家族历史中曾记载，先祖庞大固埃与香肠人有过一战——既然是香肠人，就该派德廉美身手矫健、英勇无比的厨师去迎战。众人都觉得这个主意不错。',
        '现在，只是要择选一位首战的主帅。']),
     choices:[
-      { label:'选择菲利普', desc:'他的锐气能带动全场。本次判定 +1 骰', go:()=>{ F.margaSorty += 0; say('首战主帅：菲利普'); war1Fight('菲利普', 1, 0); } },
-      { label:'选择玛格丽特', desc:'她的战术更稳。本次判定 +1 骰', go:()=>{ F.margaSorty += 1; say('首战主帅：玛格丽特'); war1Fight('玛格丽特', 1, 0); } },
+      { label:'选择菲利普', desc:'他的锐气能带动全场。本次判定 +1 骰', go:()=>{ F.margaSorty += 0; favor(-5,10); say('首战主帅：菲利普'); war1Fight('菲利普', 1, 0); } },
+      { label:'选择玛格丽特', desc:'她的战术更稳。本次判定 +1 骰', go:()=>{ F.margaSorty += 1; favor(10,-5); say('首战主帅：玛格丽特'); war1Fight('玛格丽特', 1, 0); } },
       { label:'谁都不选，我亲自出征', desc:'力量 +100', eff:{strength:100}, go:()=>{ say('首战主帅：你本人（力量 +100）'); war1Fight('你', 0, 0); } } ] });
 }
 function war1Fight(who, extra, lina){
@@ -720,8 +753,8 @@ function war2Plan(){
           '正好菲利普曾经抢劫过圣弗洛朗的一处酒窖——德廉美可以假装请求和谈，进献两个大酒桶。',
           '为表诚意，这一次需要你本人带领和谈的队伍前去交涉。但你仍需要一位信得过的人，带着修士们潜伏在酒桶内。'],
     choices:[
-      { label:'让菲利普潜伏进酒桶', desc:'', go:()=>{ say('酒桶计：菲利普潜伏'); war2Talk('菲利普',1); } },
-      { label:'让玛格丽特潜伏进酒桶', desc:'', go:()=>{ F.margaSorty += 1; say('酒桶计：玛格丽特潜伏'); war2Talk('玛格丽特',1); } } ] });
+      { label:'让菲利普潜伏进酒桶', desc:'', go:()=>{ favor(-5,10); say('酒桶计：菲利普潜伏'); war2Talk('菲利普',1); } },
+      { label:'让玛格丽特潜伏进酒桶', desc:'', go:()=>{ F.margaSorty += 1; favor(10,-5); say('酒桶计：玛格丽特潜伏'); war2Talk('玛格丽特',1); } } ] });
 }
 function war2Talk(who, extra){
   fight({
@@ -771,8 +804,8 @@ function war3Plan(){
           '消息传到德廉美，众人皆面色严峻。莉娜说她有一些发明可以帮助修道院构建起比之前更牢固的防御工事。于是众人采取了她的方法：用一种柔软的巨网，将整个修道院防护起来。',
           '你另外决定不可坐以待毙，要派一支精锐队伍前去摧毁军队的炮筒。显而易见——又到了择选这只精锐小队队长的时候。'],
     choices:[
-      { label:'菲利普前去摧毁炮筒', desc:'', go:()=>{ say('精锐小队：菲利普'); war3Defend('菲利普',1); } },
-      { label:'玛格丽特前去摧毁炮筒', desc:'', go:()=>{ F.margaSorty += 1; say('精锐小队：玛格丽特'); war3Defend('玛格丽特',1); } },
+      { label:'菲利普前去摧毁炮筒', desc:'', go:()=>{ favor(-5,10); say('精锐小队：菲利普'); war3Defend('菲利普',1); } },
+      { label:'玛格丽特前去摧毁炮筒', desc:'', go:()=>{ F.margaSorty += 1; favor(10,-5); say('精锐小队：玛格丽特'); war3Defend('玛格丽特',1); } },
       { label:'谁都不选，我亲自上阵', desc:'力量 +100', eff:{strength:100}, go:()=>{ say('精锐小队：你本人（力量 +100）'); war3Defend('你',0); } } ] });
 }
 function war3Defend(who, extra){
