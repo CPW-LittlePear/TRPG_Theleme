@@ -62,7 +62,7 @@ button{font:inherit;border:0;cursor:pointer;transition:.18s}
 .side-panel{border:1px solid #c3a265;border-radius:7px;background:#fffaf0d9;padding:clamp(12px,1.4vw,18px);box-shadow:inset 0 1px #fff;overflow-y:auto;min-height:0}
 .side-panel h3{font-size:clamp(16px,1.5vw,20px);color:#4d3022;margin-bottom:10px}
 .side-panel p{font-size:13px;line-height:1.7;color:#594d3c;margin-bottom:8px}
-.side-panel .log{max-height:150px;overflow-y:auto;border-radius:5px;border:1px solid #574331;background:#30271f;color:#dfc89b;padding:10px 12px;font:12px/1.8 ui-monospace,monospace}
+.side-panel .log{max-height:min(52vh,480px);overflow-y:auto;border-radius:5px;border:1px solid #574331;background:#30271f;color:#dfc89b;padding:10px 12px;font:12px/1.8 ui-monospace,monospace}
 .rule{height:1px;background:#8d693a66;margin:12px 0}
 
 /* ===== 属性 ===== */
@@ -345,7 +345,7 @@ function partyHTML(){
 function paintSide(){
   $('sceneStats').innerHTML = statHTML();
   $('partyInfo').innerHTML = partyHTML();
-  $('sceneLog').innerHTML = logHTML(8);
+  $('sceneLog').innerHTML = logHTML(14);
 }
 
 const STAGES = ['迎战香肠人','巧施酒桶计','抵抗大轰炸','夜袭修道院','决战 · 大钟'];
