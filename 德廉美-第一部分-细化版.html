@@ -1,0 +1,1008 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>德廉美：随心所欲 · 第一部分</title>
+<style>
+/* ===== 基础重置 ===== */
+:root{--accent:#b34835;--accent-hover:#d86d4b;--ink:#241f1a;--paper:#eee1c2;--paper2:#fffaf0;--line:#c8a86b;--muted:#796c59}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:Georgia,"Microsoft YaHei",serif;color:var(--ink)}
+body{background:radial-gradient(circle at 50% 0%,#514638,#26231d 48%,#191713 100%)}
+button{font:inherit;border:0;cursor:pointer;transition:.18s}
+
+/* ===== 外壳 ===== */
+.shell{width:100%;height:100vh;padding:16px;display:flex;align-items:center;justify-content:center}
+.book{position:relative;width:min(1440px,100%);height:100%;border:1px solid #b18449;border-radius:8px;background:linear-gradient(135deg,#f6e9ca,#eadab7);box-shadow:0 20px 60px #0008,0 0 0 5px #392d22,0 0 0 6px #b48a4d;overflow:hidden}
+
+/* ===== 通用页面 ===== */
+.screen{display:none;position:relative;width:100%;height:100%;overflow:hidden}
+.screen.active{display:flex;flex-direction:column}
+
+/* ===== 1. 开始页 ===== */
+.title-screen{padding:0;align-items:center;justify-content:center;background:linear-gradient(160deg,#f6e9ca,#e2d0a8 40%,#d4be93 100%)}
+.title-screen::before{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.06'/%3E%3C/svg%3E");pointer-events:none}
+.title-screen::after{content:"FAY CE QUE VOULDRAS";position:absolute;right:clamp(30px,6vw,100px);top:clamp(30px,6vh,80px);font:italic clamp(14px,1.4vw,22px)/1.4 Georgia,serif;color:#b9975d88;letter-spacing:.08em;pointer-events:none}
+.title-inner{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;z-index:2;max-width:700px;padding:0 24px}
+.title-ornament{font-size:clamp(40px,5vw,64px);color:#b9975d55;margin-bottom:clamp(10px,2vh,24px);letter-spacing:.3em}
+.title-inner h1{font-size:clamp(48px,7vw,108px);font-weight:700;line-height:.95;letter-spacing:-.04em;color:#4d3022;text-shadow:2px 3px 0 #fff3;margin-bottom:clamp(8px,1.5vh,16px)}
+.title-sub{font-size:clamp(14px,1.4vw,20px);color:#7a6a52;line-height:1.6;margin-bottom:clamp(28px,5vh,56px)}
+.title-menu{display:flex;flex-direction:column;gap:12px;width:min(420px,100%);z-index:3}
+.title-button{display:flex;align-items:center;justify-content:center;height:52px;border-radius:5px;font-size:clamp(18px,1.8vw,26px);font-weight:bold;letter-spacing:.08em;transition:.2s}
+.title-button.start-btn{background:linear-gradient(var(--accent),#9e382b);color:#fff6dc;box-shadow:0 4px 0 #6d241d,0 10px 20px #71302533}
+.title-button.start-btn:hover{background:linear-gradient(var(--accent-hover),var(--accent));transform:translateY(-2px)}
+.title-button.exit-btn{background:transparent;border:2px solid var(--line);color:#6a5a42;box-shadow:none}
+.title-button.exit-btn:hover{background:#d8c39744;transform:translateY(-1px)}
+.title-button:active{transform:translateY(0)}
+.title-screen .credits{position:absolute;left:clamp(24px,5vw,80px);bottom:clamp(18px,3vh,40px);text-align:left;font-size:clamp(11px,1vw,14px);line-height:1.9;color:#9b8a6f;pointer-events:none}
+.title-divider{width:60px;height:2px;background:linear-gradient(90deg,transparent,#b9975d,transparent);margin:clamp(20px,3vh,36px) auto clamp(14px,2vh,24px)}
+
+/* ===== 通用页眉 ===== */
+.game-page{padding:clamp(18px,3.4vh,44px) clamp(24px,5vw,72px)}
+.eyebrow{font:bold 11px/1 ui-monospace,monospace;letter-spacing:.28em;color:var(--accent);text-transform:uppercase}
+.phase-head{display:flex;justify-content:space-between;align-items:end;border-bottom:1px solid #b9975d88;padding-bottom:clamp(8px,1.4vh,14px);flex:0 0 auto}
+.phase-head h2{font-size:clamp(22px,2.8vw,38px);color:#4d3022;margin-top:6px}
+.phase-head .tag{background:#d8c39766;padding:6px 10px;border-radius:3px;font-size:13px;color:var(--muted);white-space:nowrap}
+
+/* ===== 版式 ===== */
+.scene-layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(240px,.7fr);grid-template-rows:minmax(0,1fr);gap:20px;flex:1;min-height:0}
+.scene-main{min-width:0;min-height:0;display:flex;flex-direction:column;justify-content:center;overflow-y:auto}
+.day-card{flex-shrink:0;border:1px solid #c3a265;border-radius:7px;background:#fffaf0d9;box-shadow:0 8px 20px #65451d18,inset 0 1px #fff;padding:clamp(18px,2.6vw,34px)}
+.day-card h3{font-size:clamp(19px,2.1vw,28px);color:#4d3022;margin-bottom:10px}
+.day-card p{font-size:clamp(14px,1.4vw,16px);line-height:1.85;color:#594d3c}
+.day-card p+p{margin-top:10px}
+.choices{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:14px;margin-top:20px}
+.choice{display:flex;flex-direction:column;justify-content:center;text-align:left;border:1px solid #a27c47;border-radius:5px;background:linear-gradient(135deg,#86613f,#67472f);box-shadow:0 4px 0 #4c3526;padding:13px 15px;color:#fff6dc;font-weight:bold}
+.choice b{display:block;font-size:15px;color:#ffdc8e;margin-bottom:4px}
+.choice span{display:block;font-size:13px;line-height:1.55;color:#f8ead0;font-weight:normal}
+.choice:hover:not(:disabled){background:linear-gradient(135deg,#9d6c48,#7a5237);transform:translateY(-2px)}
+.choice:disabled{filter:grayscale(.75);opacity:.45;cursor:not-allowed;box-shadow:0 2px 0 #4c3526}
+.choice.single{grid-column:1/-1}
+.side-panel{border:1px solid #c3a265;border-radius:7px;background:#fffaf0d9;padding:clamp(12px,1.4vw,18px);box-shadow:inset 0 1px #fff;overflow-y:auto;min-height:0}
+.side-panel h3{font-size:clamp(16px,1.5vw,20px);color:#4d3022;margin-bottom:10px}
+.side-panel p{font-size:13px;line-height:1.7;color:#594d3c;margin-bottom:8px}
+.side-panel .log{max-height:150px;overflow-y:auto;border-radius:5px;border:1px solid #574331;background:#30271f;color:#dfc89b;padding:10px 12px;font:12px/1.8 ui-monospace,monospace}
+.rule{height:1px;background:#8d693a66;margin:12px 0}
+
+/* ===== 属性 ===== */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stats.mini{grid-template-columns:repeat(2,1fr);gap:8px;margin:0}
+.stat{border:1px solid var(--line);background:#fff9e9aa;border-radius:5px;padding:10px 12px;box-shadow:inset 0 1px #fff9}
+.stat small{font-size:11px;letter-spacing:.12em;color:var(--muted)}
+.stat strong{display:block;font-size:22px;color:var(--accent);margin-top:2px}
+.stat.hidden strong{color:#b9975d}
+.stat .dice{font-size:11px;color:var(--muted);letter-spacing:.05em}
+
+/* ===== 插画（事件 CG 位） ===== */
+.cg{margin:0 0 16px;border:1px solid #b9975d;border-radius:5px;background:linear-gradient(160deg,#f2e3bf,#e3cfA6);padding:10px;box-shadow:inset 0 0 0 3px #fffaf0,inset 0 0 0 4px #c0a068}
+.cg-art{display:grid;place-items:center;height:clamp(84px,13vh,132px);color:#6b4a2a}
+.cg-art svg{height:100%;width:auto;max-width:100%}
+.cg figcaption{text-align:center;font:italic 12px/1.6 Georgia,serif;color:#8a7350;padding-top:6px}
+
+/* ===== 战争进度轴 ===== */
+.war-rail{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;flex:0 0 auto;margin:clamp(8px,1.4vh,14px) 0}
+.rail-node{position:relative;border:1px solid #c3a265;border-radius:5px;background:#fff9e980;padding:7px 9px;text-align:left;font-size:clamp(10px,1.05vw,12px);color:#7a6a52;line-height:1.5;overflow:hidden}
+.rail-node b{display:block;font-size:clamp(11px,1.15vw,13px);color:#6a5a42}
+.rail-node.done{background:#d9c79c66;color:#8b7a5f}
+.rail-node.done b{color:#8b7a5f}
+.rail-node.cur{border-color:var(--accent);background:#f0dfbc;box-shadow:0 0 0 2px #b3483533;color:#5d4a33}
+.rail-node.cur b{color:var(--accent)}
+
+/* ===== 篇章进度（结局页） ===== */
+.chapters{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:clamp(10px,2vh,20px) 0 clamp(6px,1vh,12px);width:100%}
+.chapter-card{border:1px solid #c3a265;border-radius:6px;background:#fff9e980;padding:12px 14px;text-align:left;line-height:1.55;color:#7a6a52;transition:.18s}
+.chapter-card b{display:block;font-size:clamp(15px,1.6vw,20px);color:#6a5a42;margin-bottom:3px}
+.chapter-card small{display:block;font-size:clamp(11px,1.1vw,13px);color:#9b8a6f}
+.chapter-card.done{border-color:var(--accent);background:#f0dfbc;box-shadow:0 0 0 2px #b3483522}
+.chapter-card.done b{color:var(--accent)}
+.chapter-card.tbd{border-style:dashed;background:#e6d8b855;cursor:pointer}
+.chapter-card.tbd:hover{background:#e6d8b8aa;transform:translateY(-2px)}
+.chapter-card.locked{opacity:.55;cursor:default;border-style:dotted}
+.chapter-card .ph{display:inline-block;margin-top:6px;font-size:clamp(10px,1vw,12px);letter-spacing:.14em;color:#a4906d;border:1px dashed #b9a377;border-radius:3px;padding:2px 7px}
+
+/* ===== 队伍 ===== */
+.party{display:flex;flex-wrap:wrap;gap:6px}
+.party span{background:#d8c39766;border:1px solid #b9975d88;border-radius:99px;padding:3px 10px;font-size:12px;color:#5d4a33}
+.party span.gone{opacity:.4;text-decoration:line-through}
+
+/* ===== 战斗页 ===== */
+#battleScreen.active{justify-content:center;align-items:center;gap:clamp(6px,1.2vh,14px);padding:clamp(12px,2.5vh,32px) clamp(16px,3vw,56px)}
+#battleScreen .eyebrow{text-align:center;flex:0 0 auto}
+#battleScreen h2{text-align:center;font-size:clamp(20px,2.6vw,34px);color:#4d3022;margin:0;flex:0 0 auto}
+.battle-card{width:min(100%,900px);min-height:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(5px,1.2vh,14px);border:1px solid #c3a265;border-radius:7px;background:#fffaf0d9;box-shadow:0 8px 20px #65451d18,inset 0 1px #fff;padding:clamp(12px,2.2vh,28px) clamp(14px,2.5vw,32px)}
+.battle-card>p{font-size:clamp(12px,1.3vw,15px);line-height:1.6;text-align:center;color:#594d3c;margin:0}
+.versus{display:grid;grid-template-columns:1fr auto 1fr;gap:clamp(8px,1.5vw,18px);align-items:stretch;text-align:center;margin:0}
+.army{display:flex;align-items:baseline;justify-content:center;gap:8px;border-radius:7px;padding:clamp(8px,1.6vh,18px) 12px;background:linear-gradient(145deg,#f1e4c5,#e4d2a6);border:2px solid #bb9552;box-shadow:inset 0 1px #fff,0 3px #c2a86d}
+.army.enemy{background:linear-gradient(145deg,#ebc4ad,#dba98e);border-color:#a75542}
+.army small{letter-spacing:.1em;color:#735f41;font-size:clamp(10px,1vw,12px)}
+.army strong{font-size:clamp(26px,3.4vw,46px);line-height:1;color:var(--ink);font-weight:bold}
+.army .unit{font-size:clamp(10px,1vw,13px);color:var(--muted)}
+.versus>.vs{display:grid;place-items:center;font-size:clamp(14px,1.5vw,22px);font-weight:bold;color:var(--muted)}
+.dice-box{display:grid;grid-template-columns:1fr 1fr;gap:clamp(6px,1vw,12px);margin:0}
+.dice-box>div{display:flex;align-items:center;gap:clamp(3px,.4vw,5px);flex-wrap:wrap;padding:clamp(5px,.9vh,9px) clamp(6px,.8vw,10px);background:#f1e4c5;border:1px solid #c4a268;border-radius:5px;min-height:0}
+.dice-box>div>b{width:100%;font-size:clamp(10px,.9vw,12px);color:#6c5031}
+.die{display:grid;place-items:center;width:clamp(20px,1.9vw,28px);height:clamp(20px,1.9vw,28px);background:#f8e9c0;border:2px solid #8a5f32;border-radius:5px;font-size:clamp(11px,1.05vw,15px);font-weight:bold;box-shadow:1px 2px 0 #6b4b2f;flex-shrink:0}
+.dice-sum{margin-left:auto;font-size:clamp(12px,1.2vw,15px);font-weight:bold;color:#4d3022;white-space:nowrap}
+.result{font-size:clamp(18px,2.2vw,28px);color:var(--accent);font-weight:bold;text-align:center;margin:0;min-height:1.2em}
+.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:0}
+.primary{display:inline-flex;align-items:center;justify-content:center;min-width:160px;padding:13px 24px;border-radius:5px;background:linear-gradient(var(--accent),#9e382b);color:#fff6dc;font-weight:bold;box-shadow:0 4px 0 #6d241d;letter-spacing:.06em}
+.primary:hover{background:linear-gradient(var(--accent-hover),var(--accent));transform:translateY(-2px)}
+
+/* ===== 结局页 ===== */
+#ending.active{justify-content:center;align-items:center;text-align:center}
+#ending h1{font-size:clamp(38px,6vw,84px);color:#4d3022;margin:14px 0}
+#ending>p{font-size:clamp(14px,1.5vw,17px);line-height:1.85;max-width:680px;color:#594d3c;margin:16px auto;white-space:pre-line}
+#ending .stats{width:min(660px,100%);margin:20px auto}
+#ending .credits{margin-top:26px;font-size:12px;color:var(--muted)}
+
+/* ===== 弹窗 ===== */
+.modal{position:fixed;inset:0;background:#17130ecc;display:none;align-items:center;justify-content:center;padding:20px;z-index:5}
+.modal.open{display:flex}
+.modal-card{width:min(640px,calc(100% - 40px));background:var(--paper2);border:4px solid #76502e;border-radius:8px;padding:26px;box-shadow:0 20px 60px #0008;max-height:86vh;overflow-y:auto}
+.modal-card h2{color:#4d3022;margin:8px 0 12px}
+.modal-card p{font-size:15px;line-height:1.8;color:#594d3c;margin-bottom:16px;white-space:pre-line}
+.modal-card .actions{display:grid;grid-template-columns:1fr;gap:12px}
+
+/* ===== 响应式 ===== */
+@media(max-width:800px){
+  .shell{padding:8px}.book{border-radius:4px}.game-page{padding:16px 14px}
+  .phase-head{flex-direction:column;align-items:flex-start;gap:6px;padding-bottom:10px}
+  .scene-layout{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto;gap:10px}
+  .day-card{padding:15px}.choice{padding:11px 13px}
+  .choices{grid-template-columns:1fr;gap:10px;margin-top:14px}
+  .side-panel{padding:12px;max-height:150px}
+  .war-rail{grid-template-columns:repeat(5,1fr);gap:4px}
+  .rail-node{padding:5px 6px;font-size:9px}.rail-node b{font-size:10px}
+  .cg-art{height:80px}
+  #battleScreen.active{padding:12px;gap:8px}.battle-card{padding:12px;gap:8px}
+  .versus{gap:6px}.army{flex-direction:column;align-items:center;gap:2px;padding:7px 6px}
+  .army strong{font-size:26px}.dice-box{grid-template-columns:1fr;gap:5px}
+  .die{width:22px;height:22px;font-size:12px}
+  #ending h1{font-size:40px}#ending>p{font-size:14px;line-height:1.75}
+  .title-inner h1{font-size:clamp(40px,13vw,66px)}
+}
+</style>
+</head>
+<body>
+<div class="shell"><main class="book">
+
+<!-- 开始页 -->
+<section id="intro" class="screen active title-screen">
+  <div class="title-inner">
+    <div class="title-ornament">- - -</div>
+    <h1>随心所欲<br>各行其是</h1>
+    <p class="title-sub">德廉美修道院 · 第一部 · 无钟之地</p>
+    <div class="title-menu">
+      <button id="startBtn" type="button" class="title-button start-btn">开始游戏</button>
+      <button id="exitBtn" type="button" class="title-button exit-btn">退出游戏</button>
+    </div>
+    <div class="title-divider"></div>
+  </div>
+  <div class="credits">
+    <div>策划：</div><div>编剧：</div><div>程序：</div><div>美术：</div>
+  </div>
+</section>
+
+<!-- 通用剧情页（序章 / 一日 / 葡萄园 / 事变 / 战备 / 战争事件与战报） -->
+<section id="scene" class="screen game-page">
+  <div class="phase-head">
+    <div><div class="eyebrow" id="scEyebrow"></div><h2 id="scTitle"></h2></div>
+    <span class="tag" id="scTag"></span>
+  </div>
+  <div id="warRail" class="war-rail" hidden></div>
+  <div class="scene-layout">
+    <div class="scene-main">
+      <div class="day-card">
+        <div id="scCg"></div>
+        <h3 id="scSub" hidden></h3>
+        <div id="scText"></div>
+        <div id="scChoices" class="choices"></div>
+      </div>
+    </div>
+    <aside class="side-panel">
+      <h3>随身记录</h3>
+      <div id="sceneStats" class="stats mini"></div>
+      <div class="rule"></div>
+      <p><b>同行者</b></p>
+      <div id="partyInfo" class="party"></div>
+      <div class="rule"></div>
+      <div id="sceneLog" class="log"></div>
+    </aside>
+  </div>
+</section>
+
+<!-- 战斗页 -->
+<section id="battleScreen" class="screen game-page">
+  <div class="eyebrow" id="battleEyebrow">战斗 · 属性检定</div>
+  <h2 id="battleTitle">遭遇战</h2>
+  <div class="battle-card">
+    <p id="battleText"></p>
+    <div class="versus">
+      <div class="army"><small id="playerLabel">德廉美</small><strong id="playerDice">1</strong><span class="unit">枚骰子</span></div>
+      <div class="vs">VS</div>
+      <div class="army enemy"><small id="enemyLabel">敌军</small><strong id="enemyDice">1</strong><span class="unit">枚骰子</span></div>
+    </div>
+    <div id="diceRolls" class="dice-box"></div>
+    <div id="battleResult" class="result"></div>
+    <div class="actions">
+      <button id="rollBtn" type="button" class="primary">同时掷骰</button>
+      <button id="backMapBtn" type="button" class="primary" style="display:none">继续</button>
+    </div>
+  </div>
+</section>
+
+<!-- 结局页 -->
+<section id="ending" class="screen game-page">
+  <div class="eyebrow">第一部 · 无钟之地 · 终</div>
+  <h1 id="endingTitle"></h1>
+  <p id="endingText"></p>
+  <div id="endingStats" class="stats"></div>
+  <div id="chapters" class="chapters"></div>
+  <button id="restartBtn" type="button" class="primary">重新经历这一日</button>
+  <div class="credits">结局一 · 彩蛋　／　结局二 · 折戟　／　结局三 · 苦修无穷　／　结局四 · 打碎大钟</div>
+</section>
+
+</main></div>
+
+<div id="eventModal" class="modal">
+  <div class="modal-card">
+    <div class="eyebrow" id="modalEyebrow">读条</div>
+    <h2 id="modalTitle"></h2>
+    <p id="modalText"></p>
+    <div id="modalActions" class="actions"></div>
+  </div>
+</div>
+
+<script>
+/* ==========================================================================
+   德廉美 · 第一部分
+   数值规则：
+     初始   智慧100 / 力量100 / 声望100 / 酒量500（隐藏）
+     骰子数 clamp(1 + floor(属性/100), 2, 8)
+     酒量 >= 1000 → 结局一
+   ========================================================================== */
+const CFG = {
+  init: { wisdom:100, strength:100, fame:100, drink:500 },
+  drinkEnding: 1000,
+  dice(v){ return Math.min(8, Math.max(2, 1 + Math.floor(v/100))); }
+};
+/* 数值校准提示：
+   按《第一部分数值说明》，午餐与晚餐也会给酒量 +50。因此
+     · 五次「喝酒」全选：500 + 5×100 + 2×50 = 1100  → 触发结局一
+     · 只喝白天四个时段、夜晚去藏书：500 + 4×100 + 2×50 = 1000 → 同样触发
+   若想严格做到「七次选择每一次都喝酒才触发」，把 init.drink 改成 400
+   （则全喝酒恰好 1000，少喝一次为 900 不触发），或把 drinkEnding 改成 1100。 */
+const STAT_ORDER = ['wisdom','strength','fame','drink'];
+const STAT_NAME  = { wisdom:'智慧', strength:'力量', fame:'声望', drink:'酒量' };
+
+let S = {}, F = {}, LOG = [];
+
+function reset(){
+  S = Object.assign({}, CFG.init);
+  F = {
+    drinkRevealed:false, peace:false, leaderWay:null, duel:null,
+    margaSorty:0, agnes:false, pierre:false,
+    margaretLeft:false, linaStays:true, stage:0
+  };
+  LOG = [];
+}
+function add(eff){ if(!eff) return; for(const k in eff) S[k] = Math.max(0, S[k] + eff[k]); }
+function say(t){ LOG.unshift(t); }
+function ef(eff){
+  return Object.keys(eff||{}).map(k=>{
+    const v = eff[k];
+    return STAT_NAME[k] + (v>0?' +':v<0?' ':' ') + v;
+  }).join('　');
+}
+
+/* ---------- 插画（事件 CG 位） ---------- */
+const EMB = {
+  grape:'<circle cx="46" cy="36" r="7"/><circle cx="60" cy="36" r="7"/><circle cx="74" cy="36" r="7"/><circle cx="53" cy="48" r="7"/><circle cx="67" cy="48" r="7"/><circle cx="60" cy="60" r="7"/><path d="M60 20v10"/><path d="M60 20c8 0 15 5 16 13"/>',
+  gate:'<path d="M24 78V48a36 36 0 0172 0v30"/><path d="M40 78V58a20 20 0 0140 0v20"/><path d="M30 26l16 7-7 9"/><path d="M44 14h32" stroke-width="7" opacity=".35"/>',
+  barrel:'<ellipse cx="60" cy="22" rx="22" ry="7"/><path d="M38 22v46a22 9 0 0044 0V22"/><path d="M38 36a22 8 0 0044 0"/><path d="M38 52a22 8 0 0044 0"/>',
+  bell:'<path d="M60 14v10"/><path d="M38 62c0-25 9-38 22-38s22 13 22 38z"/><path d="M31 62h58"/><path d="M52 74h16"/>',
+  book:'<path d="M60 24v52"/><path d="M60 28C48 20 30 22 22 28v42c8-6 26-8 38 0"/><path d="M60 28c12-8 30-6 38 0v42c-8-6-26-8-38 0"/>',
+  sword:'<path d="M60 12v50"/><path d="M46 38h28"/><path d="M60 64v16"/><path d="M52 80h16"/>',
+  cannon:'<path d="M18 58h54l12-12"/><circle cx="32" cy="66" r="9"/><circle cx="58" cy="66" r="9"/><path d="M26 48h46"/>',
+  sausage:'<rect x="28" y="24" width="64" height="22" rx="11"/><rect x="34" y="50" width="52" height="16" rx="8"/><path d="M40 66v14M80 66v14"/>',
+  figure:'<circle cx="60" cy="22" r="9"/><path d="M60 31v32"/><path d="M44 42h32"/><path d="M60 63l-12 18M60 63l12 18"/>',
+  cup:'<path d="M40 20h40l-7 27a13 13 0 01-26 0z"/><path d="M60 58v12"/><path d="M48 72h24"/>',
+  target:'<circle cx="60" cy="45" r="26"/><circle cx="60" cy="45" r="16"/><circle cx="60" cy="45" r="6"/><path d="M60 45l42-24"/>',
+  scroll:'<path d="M34 20h52v56H34z"/><path d="M44 32h32M44 44h32M44 56h20"/>'
+};
+function cgHTML(key, cap){
+  return '<figure class="cg"><div class="cg-art"><svg viewBox="0 0 120 92" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(EMB[key]||'')+'</svg></div><figcaption>'+cap+'</figcaption></figure>';
+}
+
+/* ---------- 渲染 ---------- */
+const $ = id => document.getElementById(id);
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); }
+
+function statHTML(cls){
+  return STAT_ORDER.map(k=>{
+    const hidden = (k==='drink' && !F.drinkRevealed);
+    const v = hidden ? '？' : S[k];
+    const d = hidden ? '' : '<div class="dice">'+CFG.dice(S[k])+' 枚骰子</div>';
+    return '<div class="stat'+(hidden?' hidden':'')+'"><small>'+STAT_NAME[k]+'</small><strong>'+v+'</strong>'+d+'</div>';
+  }).join('');
+}
+function logHTML(n){
+  return LOG.slice(0, n||7).map(x=>'› '+x).join('<br>') || '› 你的故事还没有开始。';
+}
+function partyList(){
+  const p = ['你','菲利普'];
+  if(!F.margaretLeft){ p.push('玛格丽特','莉娜'); }
+  else if(F.linaStays){ p.push('莉娜'); }
+  return p;
+}
+function partyHTML(){
+  const cur = partyList();
+  const all = ['你','菲利普','玛格丽特','莉娜'];
+  if(F.pierre) all.push('皮埃尔');
+  return all.map(n=>'<span'+(cur.indexOf(n)<0?' class="gone"':'')+'>'+n+'</span>').join('');
+}
+function paintSide(){
+  $('sceneStats').innerHTML = statHTML();
+  $('partyInfo').innerHTML = partyHTML();
+  $('sceneLog').innerHTML = logHTML(8);
+}
+
+const STAGES = ['迎战香肠人','巧施酒桶计','抵抗大轰炸','夜袭修道院','决战 · 大钟'];
+function paintRail(active){
+  const el = $('warRail');
+  el.hidden = false;
+  el.innerHTML = STAGES.map((n,i)=>{
+    const idx = i+1;
+    const cls = idx < active ? 'done' : idx === active ? 'cur' : '';
+    return '<div class="rail-node '+cls+'"><b>'+idx+'. '+n+'</b>'+(idx<active?'已结束':idx===active?'进行中':'待启')+'</div>';
+  }).join('');
+}
+function hideRail(){ $('warRail').hidden = true; $('warRail').innerHTML = ''; }
+
+/* ---------- 通用剧情卡 ---------- */
+function scene(o){
+  show('scene');
+  $('scEyebrow').textContent = o.eyebrow || '';
+  $('scTitle').textContent   = o.title || '';
+  $('scTag').textContent     = o.tag || '';
+  $('scCg').innerHTML        = o.cg ? cgHTML(o.cg, o.cgCap || '') : '';
+  $('scCg').hidden           = !o.cg;
+  $('scSub').textContent     = o.sub || '';
+  $('scSub').hidden          = !o.sub;
+  $('scText').innerHTML      = (o.text||[]).map(t=>'<p>'+t+'</p>').join('');
+  if(o.rail) paintRail(o.rail); else hideRail();
+  paintSide();
+  $('scChoices').innerHTML = '';
+  (o.choices||[]).forEach(c=>{
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'choice' + ((o.choices.length===1)?' single':'');
+    b.innerHTML = '<b>'+c.label+'</b><span>'+(c.desc||'')+'</span>';
+    if(c.disabled){ b.disabled = true; }
+    b.addEventListener('click', ()=>{
+      add(c.eff);
+      if(c.note) say(c.note);
+      paintSide();
+      c.go && c.go();
+    });
+    $('scChoices').appendChild(b);
+  });
+}
+
+/* ---------- 通用弹窗 ---------- */
+function modal(title, text, eyebrow, actions){
+  $('modalEyebrow').textContent = eyebrow || '读条';
+  $('modalTitle').textContent = title;
+  $('modalText').textContent = text;
+  const box = $('modalActions'); box.innerHTML = '';
+  actions.forEach(a=>{
+    const b = document.createElement('button');
+    b.type='button'; b.className='choice';
+    b.innerHTML = '<b>'+a.label+'</b><span>'+(a.desc||'')+'</span>';
+    b.addEventListener('click', ()=>{
+      $('eventModal').classList.remove('open');
+      add(a.eff); if(a.note) say(a.note); paintSide(); a.go && a.go();
+    });
+    box.appendChild(b);
+  });
+  $('eventModal').classList.add('open');
+}
+
+/* ---------- 战斗 ---------- */
+let pending = null;
+function fight(o){
+  show('battleScreen');
+  $('battleEyebrow').textContent = o.eyebrow || '战斗 · 属性检定';
+  $('battleTitle').textContent = o.title;
+  $('battleText').textContent = o.text;
+  $('playerLabel').textContent = o.playerLabel || ('德廉美 · ' + (o.statLabel||''));
+  $('enemyLabel').textContent  = o.enemyLabel || '敌军';
+
+  const pv = o.value, extra = o.extra || 0;
+  const pd = CFG.dice(pv) + extra, ed = o.enemy;
+  $('playerDice').textContent = pd;
+  $('enemyDice').textContent  = ed;
+  $('diceRolls').innerHTML = '';
+  $('battleResult').textContent = '';
+  $('rollBtn').style.display = 'inline-flex';
+  $('rollBtn').textContent = '同时掷骰';
+  const back = $('backMapBtn'); back.style.display = 'none';
+
+  pending = { pd, ed, o };
+  $('rollBtn').onclick = roll;
+}
+function roll(){
+  const { pd, ed, o } = pending;
+  const pr = Array.from({length:pd}, ()=>1+Math.floor(Math.random()*6));
+  const er = Array.from({length:ed}, ()=>1+Math.floor(Math.random()*6));
+  const ps = pr.reduce((a,b)=>a+b,0), es = er.reduce((a,b)=>a+b,0);
+  $('diceRolls').innerHTML =
+    '<div><b>我方</b>'+pr.map(x=>'<span class="die">'+x+'</span>').join('')+'<span class="dice-sum">= '+ps+'</span></div>' +
+    '<div><b>敌方</b>'+er.map(x=>'<span class="die">'+x+'</span>').join('')+'<span class="dice-sum">= '+es+'</span></div>';
+  let r = ps > es ? '胜' : ps < es ? '败' : '平';
+  $('battleResult').textContent = (r==='平' ? '平局' : r+'利') + ' · ' + ps + ' : ' + es;
+  $('rollBtn').style.display = 'none';
+  if(!o.allowDraw && r === '平') r = '败';
+
+  const branch = r==='胜' ? o.win : r==='败' ? o.lose : o.draw;
+  if(!branch){ o.done && o.done(r); return; }
+  add(branch.eff);
+  if(branch.note) say(branch.note);
+  const back = $('backMapBtn');
+  back.style.display = 'inline-flex';
+  back.textContent = branch.btn || '继续';
+  back.onclick = ()=> branch.go ? branch.go(r) : (o.done && o.done(r));
+}
+
+/* ==========================================================================
+   序章
+   ========================================================================== */
+const PROLOGUE = [
+  { eyebrow:'序章 · 无钟之晨', title:'德廉美的一日', tag:'获取初始酒量', cg:'cup', cgCap:'大厅的长桌与昨夜剩下的半杯',
+    text:['德廉美没有钟。没有钟就没有晨祷的时辰，没有时辰就没有非做不可的事。',
+          '你在大厅的长桌上醒来，手边还剩半杯昨夜的葡萄酒。托马斯正把一卷手稿摊在烛台下，头也不抬地问你要不要再喝一杯。'],
+    choices:[{ label:'再饮一杯', desc:'你的酒量从此有了起点。', note:'序章：与托马斯共饮', go:()=>pro(1) }] },
+  { eyebrow:'序章 · 晨祷', title:'草坪上的晨祷', tag:'没有规定的形式', cg:'figure', cgCap:'或饮酒，或奏乐，或唱诗',
+    text:['你走到中央草坪。所谓晨祷，在德廉美并没有固定的形式，也没有规定的时间——修士们起床后各自来到草坪，或饮酒，或奏乐，或唱诗，或游戏，以此开启一天。'],
+    choices:[{ label:'继续走', desc:'', go:()=>pro(2) }] },
+  { eyebrow:'序章 · 友人', title:'玛格丽特', tag:'野猎队缺一个人手', cg:'sword', cgCap:'整理马鞍的手势很利落',
+    text:['玛格丽特正在草坪另一端整理马鞍，看见你便点头致意，说今日的野猎队还缺一个人手。'],
+    choices:[{ label:'记下这件事', desc:'', go:()=>pro(3) }] },
+  { eyebrow:'序章 · 由来', title:'无墙无钟的修道院', tag:'菲利普邀你明日赴葡萄园', cg:'gate', cgCap:'大门上刻着唯一的院训',
+    text:['几位新入院的修士围在一位年长修士身边，听他讲这座修道院的来历：它建在无墙无钟的草地上，不设院墙，不定时辰，唯一的院训刻在大门上——“随心所欲，各行其是”。',
+          '友人菲利普挤过来，拍着你的肩膀，约你明日去东园的葡萄园玩乐。'],
+    choices:[{ label:'应下邀约', desc:'明日，葡萄园。', note:'序章：答应菲利普的邀约', go:runDay }] }
+];
+function pro(i){
+  const p = PROLOGUE[i];
+  scene({ eyebrow:p.eyebrow, title:p.title, tag:p.tag, cg:p.cg, cgCap:p.cgCap, text:p.text, choices:p.choices });
+}
+
+/* ==========================================================================
+   一、主角的一日（7 次选择）
+   ========================================================================== */
+const MEAL = { wisdom:50, strength:50, fame:50, drink:50 };
+const DAY = [
+  { period:'上午 · 时段一', title:'靶场', cg:'target', cgCap:'火枪、弓、弩与一尊小炮',
+    text:['野猎场的靶场上摆着火枪、弓、弩和一尊小炮。晨光把靶心照得很清楚。'],
+    choices:[
+      { label:'打靶', desc:'练习火枪、弓、弩与炮。力量 +100', eff:{strength:100}, note:'上午：打靶', go:nextDay },
+      { label:'不干，喝酒', desc:'阳光正好，酒也正好。酒量 +100', eff:{drink:100}, note:'上午：饮酒', go:nextDay } ] },
+  { period:'上午 · 时段二', title:'学习语言', cg:'book', cgCap:'藏书塔下的异国语法',
+    text:['藏书塔下有人在念异国的语法，元音咬得很重，听起来像在唱歌。'],
+    choices:[
+      { label:'学习语言', desc:'智慧 +100', eff:{wisdom:100}, note:'上午：学习语言', go:nextDay },
+      { label:'不干，喝酒', desc:'酒量 +100', eff:{drink:100}, note:'上午：饮酒', go:nextDay } ] },
+  { period:'午餐', title:'午餐', cg:'cup', cgCap:'长桌摆开',
+    text:['长桌摆开了午餐。在德廉美，没有人规定你该吃多少、该什么时候吃完。'],
+    choices:[
+      { label:'大鱼大肉', desc:'智慧+50 力量+50 声望+50 酒量+50', eff:MEAL, note:'午餐：大鱼大肉', go:nextDay },
+      { label:'一壶酒', desc:'智慧+50 力量+50 声望+50 酒量+50', eff:MEAL, note:'午餐：一壶酒', go:nextDay } ] },
+  { period:'下午 · 时段一', title:'模拟诉讼', cg:'scroll', cgCap:'草坪上搭起的模拟法庭',
+    text:['草坪上搭起了模拟法庭。今天辩的是一件旧案：两个当事人各自请了律师，庭上引经据典，庭下却已经赌上了三坛酒。'],
+    choices:[
+      { label:'模拟诉讼', desc:'声望 +100', eff:{fame:100}, note:'下午：模拟诉讼', go:nextDay },
+      { label:'不干，喝酒', desc:'酒量 +100', eff:{drink:100}, note:'下午：饮酒', go:nextDay } ] },
+  { period:'下午 · 时段二', title:'野猎', cg:'sword', cgCap:'林子里的集合哨',
+    text:['野猎队在林子里已经集合，马匹打着响鼻。玛格丽特朝你扬了扬下巴。'],
+    choices:[
+      { label:'野猎', desc:'力量 +100', eff:{strength:100}, note:'下午：野猎', go:nextDay },
+      { label:'不干，喝酒', desc:'酒量 +100', eff:{drink:100}, note:'下午：饮酒', go:nextDay } ] },
+  { period:'晚餐', title:'晚餐', cg:'cup', cgCap:'比午餐更丰盛',
+    text:['晚餐比午餐更丰盛。有人奏乐，有人争辩，有人已经趴在桌上睡着了。'],
+    choices:[
+      { label:'大鱼大肉', desc:'智慧+50 力量+50 声望+50 酒量+50', eff:MEAL, note:'晚餐：大鱼大肉', go:nextDay },
+      { label:'一壶酒', desc:'智慧+50 力量+50 声望+50 酒量+50', eff:MEAL, note:'晚餐：一壶酒', go:nextDay } ] },
+  { period:'夜晚', title:'藏书塔', cg:'book', cgCap:'灯还亮着',
+    text:['藏书塔的灯还亮着。架子上什么都有：族谱、异闻、还有几本谁也读不懂的旧书。'],
+    choices:[
+      { label:'翻看藏书', desc:'必经历：翻看家谱（声望 +100），再择一书。', go:library },
+      { label:'不干，喝酒', desc:'酒量 +100', eff:{drink:100}, note:'夜晚：饮酒', go:endDay } ] }
+];
+let dayIdx = 0;
+function runDay(){ dayIdx = 0; renderDay(); }
+function renderDay(){
+  const d = DAY[dayIdx];
+  scene({ eyebrow:'第一阶段 · 主角的一日', title:d.title, tag:d.period + '　（' + (dayIdx+1) + '/7）',
+          cg:d.cg, cgCap:d.cgCap, text:[d.text[0]], choices:d.choices.map(c=>({label:c.label,desc:c.desc,eff:c.eff,note:c.note,go:c.go})) });
+}
+function nextDay(){ dayIdx++; if(dayIdx < DAY.length) renderDay(); else endDay(); }
+function library(){
+  add({ fame:100 }); say('夜晚：翻看家谱'); paintSide();
+  scene({ eyebrow:'第一阶段 · 主角的一日', title:'藏书塔 · 家谱', tag:'夜晚　（7/7）', cg:'book', cgCap:'庞大固埃的家谱',
+    text:['你先翻开了家谱——在德廉美，这是必看的一页。你的先祖庞大固埃的名字压在很前面的位置上。（声望 +100）',
+          '然后，你还有余裕再读一本书。'],
+    choices:[
+      { label:'书 A', desc:'智慧 +50', eff:{wisdom:50}, note:'夜晚：读书 A', go:endDay },
+      { label:'书 B', desc:'智慧 +100', eff:{wisdom:100}, note:'夜晚：读书 B', go:endDay },
+      { label:'书 C', desc:'智慧 +150', eff:{wisdom:150}, note:'夜晚：读书 C', go:endDay } ] });
+}
+function endDay(){
+  F.drinkRevealed = true;
+  if(S.drink >= CFG.drinkEnding){
+    say('一日终了：酒量 ' + S.drink);
+    return ending(1);
+  }
+  scene({ eyebrow:'第一阶段 · 一日终了', title:'数值生成', tag:'酒量揭晓', cg:'cup', cgCap:'十天',
+    text:['一天结束了。你在德廉美的第一份「成绩单」就此生成——连你自己也没想到，酒量这种东西也会被记在上面。',
+          '此刻你的酒量是 <b>'+S.drink+'</b>。明日的葡萄园之约还在等着你。'],
+    choices:[{ label:'赴葡萄园之约', desc:'第二日，东园。', note:'一日终了：酒量 '+S.drink, go:runVineyard }] });
+}
+
+/* ==========================================================================
+   二、赴约葡萄园（糕饼之战导火索）
+   ========================================================================== */
+function runVineyard(){
+  scene({ eyebrow:'第二阶段 · 葡萄园', title:'东园的酒', tag:'糕饼之战的导火索', cg:'grape', cgCap:'东园与西园，只隔一条窄河',
+    text:['第二日，你与几位友人在东园的葡萄园里畅饮玩乐。',
+          '莉娜也在。她正在研究新的葡萄酒储存方式，顺手给这里送了一点酒过来——她说这批酒「比去年稳」，然后就去摆弄她的木桶了。'],
+    choices:[{ label:'接过酒杯', desc:'酒量 +50', eff:{drink:50}, note:'葡萄园：与莉娜试新酒', go:vineyard2 }] });
+}
+function vineyard2(){
+  scene({ eyebrow:'第二阶段 · 葡萄园', title:'窄河对岸', tag:'菲利普开口了', cg:'grape', cgCap:'西园里劳作的修士',
+    text:['与此同时的西园，几名圣弗洛朗修道院的修士正在园中劳作。怯懦的平民出身的修士皮埃尔也在其中——他因为早课时偷尝圣餐酒，被罚在这里劳动。',
+          '菲利普素来看不起传统禁欲苦修的修士。他出言调侃，故意大声赞美东园出产的酒，讽刺圣弗洛朗对修士饮酒有严格定量配给；又说曾见有小贼来东园偷拿德廉美的酒，意有所指。',
+          '圣弗洛朗的修士自然不认，认为菲利普故意羞辱、抹黑他们。两方争吵起来。'],
+    choices:[{ label:'听下去', desc:'', go:vineyard3 }] });
+}
+function vineyard3(){
+  scene({ eyebrow:'第二阶段 · 葡萄园', title:'一拳', tag:'声望判定', cg:'sword', cgCap:'被砍倒的一排葡萄矮架',
+    text:['皮埃尔不愿参与冲突，低头装鹌鹑，却被菲利普一眼看中——话里话外，都认为皮埃尔最可能做出这样的事，还说他刚刚一直对着德廉美的酒桶方向发呆。',
+          '皮埃尔十分恼怒，涉过小河冲上来，往菲利普脸上挥了一拳。但瘦弱的身板很快被冲上来的德廉美人七手八脚地撂倒。圣弗洛朗的修士起初并不很想为皮埃尔出头，只把他拉了回去。',
+          '可菲利普非常生气。他涉过小河，挥剑砍倒了圣弗洛朗众人刚刚劳作完成的一排葡萄矮架。'],
+    choices:[{ label:'冲突升级了', desc:'', go:vineyardJudge }] });
+}
+function vineyardJudge(){
+  const ok = S.fame >= 400;
+  scene({ eyebrow:'第二阶段 · 葡萄园', title:'群架', tag:'当前声望 ' + S.fame,
+    text:['事情升级成了一场群架。两园的人挤在窄河两岸，酒桶被撞翻，葡萄踩了一地。',
+          ok ? '你的声望足够高——只要开口，草坪上的人会听你的。' : '你人微言轻，喊也未必有人听。既然如此，不如先打赢这一架。'],
+    choices:[
+      { label:'拉开两边，喊停', desc: ok ? '声望 +100' : '需要声望 ≥ 400',
+        disabled: !ok, eff: ok?{fame:100}:null, note: ok?'葡萄园：拉开两边，声望 +100':null, go: runIncident },
+      { label:'站到菲利普身边，加入群架', desc: ok ? '需要声望 < 400' : '力量 +100',
+        disabled: ok, eff: ok?null:{strength:100}, note: ok?null:'葡萄园：参与群架，力量 +100', go: runIncident } ] });
+}
+
+/* ==========================================================================
+   三、事变
+   ========================================================================== */
+function runIncident(){
+  scene({ eyebrow:'第三阶段 · 事变', title:'被涂毁的院训', tag:'圣弗洛朗宣布断绝来往', cg:'gate', cgCap:'被涂成灰黑的题词',
+    text:['几日后，你照常在院中修行，忽然听闻大门处出事了。',
+          '你赶到时发现，圣弗洛朗修道院派人涂毁了德廉美大门上的题词。葡萄园事后，几位受罚修士向长老会报告了此事；长老之一阿尔蒙认为这是对圣弗洛朗以及天主的严重亵渎，宣布不再与德廉美来往交流。但他同时也处罚了皮埃尔，认为其不应该挑起事端。',
+          '德廉美众人对此并不在意，依旧该吃该喝，随心所欲，各行其是——毕竟两院本来也没什么官方交流。你只是派人重新描写了一遍大门上的题词。'],
+    choices:[{ label:'重新描好题词', desc:'', go:incident2 }] });
+}
+function incident2(){
+  scene({ eyebrow:'第三阶段 · 事变', title:'包围', tag:'菲利普身上的酒气', cg:'barrel', cgCap:'被洗劫一空的酒窖',
+    text:['隔日，你忽然听到：教皇授意军队前来，包围了德廉美修道院。',
+          '正疑惑时，菲利普醉意熏熏地走过来——他身上的酒气，似乎不是德廉美所供的葡萄酒的味道。你问他昨晚干什么了，他说：我昨晚帮了皮埃尔一个大忙。',
+          '原来菲利普昨夜又去了葡萄园找酒喝，正撞见再次被罚的皮埃尔承担更重的劳役：他得一个人从下游河港搬运五十箱圣餐酒进圣弗洛朗的酒窖。圣餐酒没有封口，酒香四溢，而管事明日检查时，酒不允许少一滴。路途颠簸，未封口的酒极易洒落——菲利普认为这根本不可能做到，于是带人将圣弗洛朗的酒窖洗劫一空，理所当然地说：既然酒窖都不是他们的了，这个惩罚就不成立了。',
+          '孰料皮埃尔并不认为这是帮忙。管事若发现酒窖被劫，只会认为他没看管好。皮埃尔只能主动向阿尔蒙禀告；阿尔蒙认为这是德廉美对圣弗洛朗的严重挑衅，上报教区教皇。教皇听闻竟有德廉美这样亵渎天主的修行方式，认定其为邪恶的异教，于是派军队包围了德廉美。'],
+    choices:[{ label:'听明白了', desc:'', go:incidentChoice }] });
+}
+function incidentChoice(){
+  scene({ eyebrow:'第三阶段 · 事变', title:'修书，还是应战', tag:'选择会写进后面的战事',
+    text:['军队就驻扎在河对岸的森林里。现在是决定态度的时候。'],
+    choices:[
+      { label:'修书一封，先尝试和平解决', desc:'声望 +100（书信未必有回音）', eff:{fame:100}, go:()=>{ F.peace = true; say('事变：修书求和，声望 +100'); runPrep(); } },
+      { label:'直接应战', desc:'进入战备阶段', go:()=>{ F.peace = false; say('事变：直接应战'); runPrep(); } } ] });
+}
+
+/* ==========================================================================
+   四、战备
+   ========================================================================== */
+function runPrep(){ F.stage = 0; if(S.fame >= 500) prepLeaderAuto(); else prepLeaderPay(); }
+function prepLeaderAuto(){
+  F.leaderWay = 'auto';
+  say('战备：声望 '+S.fame+' ≥ 500，被众人推举为领袖');
+  scene({ eyebrow:'第四阶段 · 战备', title:'领袖', tag:'声望 ' + S.fame + ' ≥ 500', cg:'sword', cgCap:'没有投票，只有一句「你来」',
+    text:['德廉美从来不投票。可当军队压到河对岸时，众人自发地把目光投向你，然后齐声喊出了你的名字。',
+          '没有人组织，也没有人反对。你的声望已经足够让所有人相信：今天该由你来下令。'],
+    choices:[{ label:'接过指挥', desc:'进入决斗之争', go:prepDuel }] });
+}
+function prepLeaderPay(){
+  const need = 500 - S.fame;
+  const can = k => S[k] >= need;
+  scene({ eyebrow:'第四阶段 · 战备', title:'还差一点声望', tag:'当前声望 ' + S.fame + ' / 需 500', cg:'sword', cgCap:'你得先让人愿意听你的',
+    text:['德廉美从来不投票。可当军队压到河对岸时，众人环顾一圈，没有人立刻喊出你的名字——你的声望还差 <b>'+need+'</b> 点。',
+          '你想成为那个下令的人，就得拿别的东西去换。'],
+    choices:[
+      { label:'付出智慧：说服', desc:'智慧 -'+need+'，声望补至 500', disabled: !can('wisdom'),
+        eff:{wisdom:-need}, go:()=>{ S.fame = 500; F.leaderWay='wisdom'; say('战备：以智慧说服众人，声望补至 500'); prepDuel(); } },
+      { label:'付出力量：打服', desc:'力量 -'+need+'，声望补至 500', disabled: !can('strength'),
+        eff:{strength:-need}, go:()=>{ S.fame = 500; F.leaderWay='strength'; say('战备：以力量打服众人，声望补至 500'); prepDuel(); } },
+      { label:'付出酒量：灌醉', desc:'酒量 -'+need+'，声望补至 500', disabled: !can('drink'),
+        eff:{drink:-need}, go:()=>{ S.fame = 500; F.leaderWay='drink'; say('战备：把所有人都灌醉，声望补至 500'); prepDuel(); } } ] });
+}
+function prepDuel(){
+  scene({ eyebrow:'第四阶段 · 战备', title:'谁上战场', tag:'菲利普与玛格丽特', cg:'sword', cgCap:'一柄没有出鞘的剑',
+    text:['菲利普表现得跃跃欲试。玛格丽特也自请出战，表示可以带领女修迎战，你同意了。',
+          '但菲利普表达了质疑：他认为女修们平日里都在做女红，野猎时也不过是换了身行头骑马兜圈子，并不真正具备作战能力。',
+          '玛格丽特十分生气，当庭就要与菲利普决斗。菲利普则说，他不与女士进行决斗——「而且大战前夕自己人内讧，像什么样子」。',
+          '玛格丽特看向你。'],
+    choices:[
+      { label:'主持发起这场决斗', desc:'让这一剑有个结果', go:()=>{ F.duel='yes'; say('战备：主持菲利普与玛格丽特的决斗'); prepAssign(); } },
+      { label:'让两人都消停点', desc:'继续动员', go:()=>{ F.duel='no'; say('战备：压下了这场决斗'); prepAssign(); } } ] });
+}
+function prepAssign(){
+  const t = F.duel === 'yes'
+    ? ['你主持了这场决斗。菲利普起先还想点到为止，并未全心全意对待；但玛格丽特一剑将他从马上挑下，他狼狈地摔在地上，人群中爆发出一阵欢呼。']
+    : ['你让两人都消停了。菲利普收了声，玛格丽特也把剑放了回去——可她看你的那一眼，并不像是被说服了。'];
+  scene({ eyebrow:'第四阶段 · 战备', title:'托马斯与莉娜', tag:'后方与前线', cg:'barrel', cgCap:'莉娜的「小玩意儿」',
+    text:t.concat(['你随后委任托马斯坐镇后方。莉娜表示她就不上前线了，但她有许多「小玩意儿」，可以帮得上前线的忙。']),
+    choices:[{ label:'出征', desc:'第一场：迎战香肠人', go:war1 }] });
+}
+
+/* ==========================================================================
+   五、战争
+   ========================================================================== */
+/* --- 第一场：迎战香肠人 --- */
+function war1(){ F.stage = 1; war1Branch3(); }
+function war1Branch3(){
+  const t = F.peace
+    ? ['菲利普几乎已经按捺不住想要大展身手的心。但你并不打算由德廉美一方率先出手，劝住了他。',
+       '你讲起糕饼大战时先祖如何以退还糕饼换取和平——虽然和谈有可能失败，但不可不做。眼下书信仍未见回音，还需等待圣弗洛朗一方的回应。你吩咐托马斯：夜间的防御不可松懈。']
+    : ['菲利普几乎已经按捺不住想要大展身手的心。但你并不打算由德廉美一方率先出手，劝住了他。',
+       '你认为情况尚不明确，还不知道圣弗洛朗究竟想干什么，于是选择以不变应万变，只命人加固防御工事。'];
+  scene({ eyebrow:'第五阶段 · 战争 1/5', title:'迎战香肠人', tag:F.peace?'已修书求和':'未曾修书', rail:1, cg:'cannon', cgCap:'塔楼窗口的报告',
+    text:t.concat(['当夜，圣弗洛朗一方果然有异动。在塔楼窗口值班的修士很快来报：发现数队小香肠人正鬼鬼祟祟地接近德廉美外围的草地；而在这些先遣队后方，远远的对岸山坡上，还能看见无数披坚执锐的香肠人。',
+       '你很快召集了德廉美众人。家族历史中曾记载，先祖庞大固埃与香肠人有过一战——既然是香肠人，就该派德廉美身手矫健、英勇无比的厨师去迎战。众人都觉得这个主意不错。',
+       '现在，只是要择选一位首战的主帅。']),
+    choices:[
+      { label:'选择菲利普', desc:'他的锐气能带动全场。本次判定 +1 骰', go:()=>{ F.margaSorty += 0; say('首战主帅：菲利普'); war1Fight('菲利普', 1, 0); } },
+      { label:'选择玛格丽特', desc:'她的战术更稳。本次判定 +1 骰', go:()=>{ F.margaSorty += 1; say('首战主帅：玛格丽特'); war1Fight('玛格丽特', 1, 0); } },
+      { label:'谁都不选，我亲自出征', desc:'力量 +100', eff:{strength:100}, go:()=>{ say('首战主帅：你本人（力量 +100）'); war1Fight('你', 0, 0); } } ] });
+}
+function war1Fight(who, extra, lina){
+  fight({
+    eyebrow:'战斗 · 骰子判定 1', title:'迎战香肠人（主帅：'+who+'）', rail:1,
+    text:'厨师们——现在是战士了——带着火炉、烤炉、平底锅、火钳、烤盘与锅铲埋伏下去。双方同时掷骰。',
+    playerLabel:'德廉美 · 力量 '+S.strength+(extra?' +'+extra+'（主帅）':''),
+    enemyLabel:'香肠人先遣队',
+    value:S.strength, extra:extra + (lina||0), enemy:3, allowDraw:true,
+    win:{ eff:{fame:100}, note:'首战告捷：声望 +100', btn:'处置战俘',
+      go:()=>modal('战俘处置','你抱有一个疑惑：香肠人怎么会参与到这场斗争里来？\n\n你找到被俘的香肠人首领。据巨人历史记载，先祖庞大固埃曾到访香肠人的岛屿，并与香肠人结下永世盟好。首领却吱哇乱叫：你们亵渎我族的神灵——一只飞猪！\n\n你莫名其妙，顺着首领愤怒的目光看去，旁边庆功宴上，一名厨师正在撕扯一只烤乳猪。\n\n你试图讲理：用来吃的猪和你们的飞猪神灵是两回事，况且我们向来非常尊重异族的习俗。首领完全不听。你与这位偏激的种族主义者也没法继续谈下去——这部分香肠人只是被教皇的异教说煽动了，而且已经被打服了。可也没有为了战俘着想就禁止众人吃猪肉的道理。\n\n于是你把香肠人关了几天，就将他们送回了香肠岛。','事件 · 有 CG',[
+        { label:'送他们回香肠岛', desc:'', go:war1Report1 } ]) },
+    lose:{ eff:{fame:-100}, note:'首战失利：声望 -100', btn:'重振士气',
+      go:()=>modal('士气重振','主帅带领厨师们来到外围草地才发现，他们错失了最佳战机。先前潜入的香肠人已经迅速隐没在夜色下的修道院里，敌在暗，我在明。\n\n厨师们空拿着火炉、平底锅与锅铲，却找不到敌人在哪里，只好小心地向四处摸去。忽然不知哪个香肠人发出一声叫喊，凶恶的香肠人骤然现身——后方的香肠人也不知何时涌入了修道院：先遣队把大门打开了！\n\n众人被打了个措手不及。香肠人洗劫了图书室，把所有关于香肠烹饪的书全都焚毁了。','事件 · 有 CG',[
+        { label:'喝一场酒提振士气', desc:'酒量 +50', eff:{drink:50}, note:'士气重振：痛饮一场，酒量 +50', go:war2 },
+        { label:'与众人一起加强训练', desc:'力量 +50', eff:{strength:50}, note:'士气重振：加练，力量 +50', go:war2 } ]) },
+    draw:{ eff:{fame:-50}, note:'首战僵持：声望 -50', btn:'战后复盘',
+      go:()=>modal('战后复盘','主帅带领厨师们与香肠人在外围草地正面碰上了。厨师们挥舞着火炉、烤炉、平底锅、火钳、烤盘、锅铲，但香肠人数量实在太多，甚至可以七八个人围着一个厨师。\n\n双方打了很久，精疲力竭，一直到天都亮了，只好各自回退。\n\n你与众人一起复盘了这一战。','事件 · 有 CG',[
+        { label:'记下这一课的教训', desc:'智慧 +50', eff:{wisdom:50}, note:'战后复盘：智慧 +50', go:war2 } ]) }
+  });
+}
+function war1Report1(){
+  add({fame:100, strength:100}); say('战报 · 报恩：香肠岛女王送来谢礼，声望 +100、力量 +100');
+  scene({ eyebrow:'战报 · 无 CG', title:'报恩', tag:'香肠岛的礼物', rail:1,
+    text:['不久后，香肠岛的现任女王发来了礼物，表示感谢。',
+          '来的使节说得很朴素：你们放回了我们的族人，我们记得。（声望 +100，力量 +100）'],
+    choices:[{ label:'收下礼物', desc:'', go:war2 }] });
+}
+
+/* --- 第二场：巧施酒桶计 --- */
+function war2(){ F.stage = 2; war2Plan(); }
+function war2Plan(){
+  scene({ eyebrow:'第五阶段 · 战争 2/5', title:'巧施酒桶计', tag:'母猪计的翻版', rail:2, cg:'barrel', cgCap:'两只大酒桶',
+    text:['经此一役，众人认为是主动出击的时候了。有人提议：巨人先祖曾在迎战香肠人时使用过「母猪计」，这次不妨做一出「酒桶计」。',
+          '正好菲利普曾经抢劫过圣弗洛朗的一处酒窖——德廉美可以假装请求和谈，进献两个大酒桶。',
+          '为表诚意，这一次需要你本人带领和谈的队伍前去交涉。但你仍需要一位信得过的人，带着修士们潜伏在酒桶内。'],
+    choices:[
+      { label:'让菲利普潜伏进酒桶', desc:'', go:()=>{ say('酒桶计：菲利普潜伏'); war2Talk('菲利普',1); } },
+      { label:'让玛格丽特潜伏进酒桶', desc:'', go:()=>{ F.margaSorty += 1; say('酒桶计：玛格丽特潜伏'); war2Talk('玛格丽特',1); } } ] });
+}
+function war2Talk(who, extra){
+  fight({
+    eyebrow:'战斗 · 骰子判定 2-1', title:'渡河交涉（主要判定：智慧）', rail:2,
+    text:'和谈的队伍随酒桶一起登船渡河，还没靠岸就被教皇的军队拦下了。你出面表示是来求和的。士兵通报后，阿尔蒙出现在岸边——他看起来很难搞。',
+    playerLabel:'德廉美 · 智慧 '+S.wisdom, enemyLabel:'阿尔蒙的疑虑',
+    value:S.wisdom, extra:extra, enemy:3, allowDraw:false,
+    win:{ note:'说服成功：声望 +100', eff:{fame:100}, btn:'当夜',
+      go:()=>scene({ eyebrow:'第五阶段 · 战争 2/5', title:'酒桶计得手', tag:'声望 +100', rail:2, cg:'barrel', cgCap:'篝火旁的营地',
+        text:['阿尔蒙看起来似乎没有起疑，但也并不打算替圣弗洛朗领受这份情。他挥了挥手，示意士兵把酒桶拖走，在驻地里私下分掉，但绝不允许酒桶进入圣弗洛朗修道院。说完，他就退回了那扇沉重的石门里。',
+              '你表示自己是来和谈的，想跟进去，却被拦下了：需要先上报给教皇，在教皇和长老会决定之前，你只能留在外围的森林驻地。',
+              '当夜。趁教皇军队围着篝火大笑谈天的时候，酒桶中潜伏良久的德廉美修士悄悄爬了出来，打了军队一个措手不及。虽然圣弗洛朗守备实在太死，没能攻入，但也大大挫伤了对手的锐气。'],
+        choices:[{ label:'回到德廉美', desc:'', go:war2Event }] }) },
+    lose:{ note:'被识破，强行登岸', btn:'混战', go:()=>war2Fight(who, extra) }
+  });
+}
+function war2Fight(who, extra){
+  fight({
+    eyebrow:'战斗 · 骰子判定 2-2', title:'水岸混战（主要判定：力量）', rail:2,
+    text:'阿尔蒙的眼睛危险地眯了眯，显然并不相信你的话。他对手下耳语几句，一旁的士兵立刻举着长矛朝那两个大酒桶逼近——他们要刺开酒桶。你立刻吹响了早已约定好的暗号哨声。酒桶内的统帅与士兵只能被迫现身，强行登岸。',
+    playerLabel:'德廉美 · 力量 '+S.strength, enemyLabel:'教皇军队',
+    value:S.strength, extra:extra, enemy:4, allowDraw:false,
+    win:{ eff:{fame:100, wisdom:-50}, note:'混战取胜：声望 +100、智慧 -50', btn:'收兵',
+      go:()=>scene({ eyebrow:'第五阶段 · 战争 2/5', title:'大败教皇军队', tag:'声望 +100、智慧 -50', rail:2,
+        text:['你们大败教皇军队。但阿尔蒙早已被左右保护着，迅速退回了圣弗洛朗修道院内。'],
+        choices:[{ label:'回到德廉美', desc:'', go:war2Event }] }) },
+    lose:{ eff:{fame:-100, strength:-50}, note:'未能登岸：声望 -100、力量 -50', btn:'收兵',
+      go:()=>scene({ eyebrow:'第五阶段 · 战争 2/5', title:'退了回来', tag:'声望 -100、力量 -50', rail:2,
+        text:['教皇军队早有戒备，德廉美众人未能登岸，只能退回河这岸。'],
+        choices:[{ label:'回到德廉美', desc:'', go:war2Event }] }) }
+  });
+}
+function war2Event(){
+  scene({ eyebrow:'事件 · 有 CG', title:'乞怜者的来访', tag:'是否打破入院标准', rail:2, cg:'figure', cgCap:'院门外的一个人影',
+    text:['流民艾格尼丝来到修道院门前。她自称不属于任何教派，也没有任何信仰，只是河谷地区的一个流民。眼下战事爆发，她希望进入院中寻求庇护。',
+          '要收留她吗？可是艾格尼丝并不符合女修士入院的标准。'],
+    choices:[
+      { label:'收容她，暂时打破入院标准', desc:'声望 -100；众人隐约有些反对的声音', eff:{fame:-100}, go:()=>{ F.agnes = true; say('事件：收容艾格尼丝，声望 -100'); war3(); } },
+      { label:'拒绝她，守住制度的边界', desc:'院门合上了', go:()=>{ F.agnes = false; say('事件：拒绝了艾格尼丝'); war3(); } } ] });
+}
+
+/* --- 第三场：抵抗大轰炸 --- */
+function war3(){ F.stage = 3; war3Plan(); }
+function war3Plan(){
+  scene({ eyebrow:'第五阶段 · 战争 3/5', title:'抵抗大轰炸', tag:'莉娜的巨网', rail:3, cg:'cannon', cgCap:'对岸的炮口',
+    text:['据说教皇动了怒，指示长老会一定要尽快拿下这座散布异端邪说的修道院。于是军队从别处调来许多大炮和炮弹，准备向德廉美进行轰炸。',
+          '消息传到德廉美，众人皆面色严峻。莉娜说她有一些发明可以帮助修道院构建起比之前更牢固的防御工事。于是众人采取了她的方法：用一种柔软的巨网，将整个修道院防护起来。',
+          '你另外决定不可坐以待毙，要派一支精锐队伍前去摧毁军队的炮筒。显而易见——又到了择选这只精锐小队队长的时候。'],
+    choices:[
+      { label:'菲利普前去摧毁炮筒', desc:'', go:()=>{ say('精锐小队：菲利普'); war3Defend('菲利普',1); } },
+      { label:'玛格丽特前去摧毁炮筒', desc:'', go:()=>{ F.margaSorty += 1; say('精锐小队：玛格丽特'); war3Defend('玛格丽特',1); } },
+      { label:'谁都不选，我亲自上阵', desc:'力量 +100', eff:{strength:100}, go:()=>{ say('精锐小队：你本人（力量 +100）'); war3Defend('你',0); } } ] });
+}
+function war3Defend(who, extra){
+  const lina = 1; // 莉娜的防御工事
+  fight({
+    eyebrow:'战斗 · 骰子判定 3-1', title:'第一波轰炸（主要判定：力量）', rail:3,
+    text:'很快，第一波轰炸来临了。柔软的巨网能否扛住，就看现在。',
+    playerLabel:'德廉美 · 力量 '+S.strength+' +1（莉娜的巨网）', enemyLabel:'教皇军的炮火',
+    value:S.strength, extra:extra + lina, enemy:4, allowDraw:false,
+    win:{ eff:{strength:100}, note:'防御成功：力量 +100', btn:'派出精锐',
+      go:()=>scene({ eyebrow:'第五阶段 · 战争 3/5', title:'炮弹被弹了回去', tag:'力量 +100', rail:3, cg:'cannon', cgCap:'挡回去的炮弹',
+        text:['防御工事起效了。柔软的网竟然真的将炮弹统统挡了回去。偶尔有几颗漏网之鱼，都被你庞大的身躯挡住，或者徒手接住。',
+              '第一波轰炸之后，你梳了梳头发，竟还掉下来几颗炮弹。'],
+        choices:[{ label:'趁装填间隙出发', desc:'', go:()=>war3Raid(who, extra) }] }) },
+    lose:{ eff:{strength:-100}, note:'防御失利：力量 -100', btn:'派出精锐',
+      go:()=>scene({ eyebrow:'第五阶段 · 战争 3/5', title:'一片狼藉', tag:'力量 -100', rail:3,
+        text:['还没来得及搭好防御工事。网的材料似乎出了什么问题，没能起效。德廉美修道院被轰炸得一片狼藉。'],
+        choices:[{ label:'趁装填间隙出发', desc:'', go:()=>war3Raid(who, extra) }] }) }
+  });
+}
+function war3Raid(who, extra){
+  fight({
+    eyebrow:'战斗 · 骰子判定 3-2', title:'摧毁发射点（主要判定：力量）', rail:3,
+    text:'第一波轰炸后，精锐小队趁着对方装填炮弹的间隙，开始向对岸的发射点摸过去。',
+    playerLabel:'德廉美 · 力量 '+S.strength, enemyLabel:'炮兵阵地',
+    value:S.strength, extra:extra, enemy:4, allowDraw:false,
+    win:{ eff:{fame:100}, note:'摧毁发射点：声望 +100', btn:'清点人手', go:war3Check },
+    lose:{ eff:{fame:-50}, note:'未能穿越炮火：声望 -50', btn:'清点人手', go:war3Check }
+  });
+}
+function war3Check(){
+  const trigger = (F.duel === 'no' && F.margaSorty <= 1) || (F.duel === 'yes' && F.margaSorty === 0);
+  if(trigger) war3Margaret(); else { F.margaretLeft = false; war4(); }
+}
+function war3Margaret(){
+  scene({ eyebrow:'条件事件 · 有 CG', title:'玛格丽特的不满', tag:'她的出战次数：'+F.margaSorty+' / 3', rail:3, cg:'sword', cgCap:'一个空了的马厩',
+    text:['玛格丽特认为，她以及女修们的战斗被严重低估了。',
+          '多年来，女修士在德廉美始终处在一个相当尴尬的地位——她们虽然被招收进来，却并不像男修士那样接受全面的教育；宴饮、野猎等活动也常常将她们排除在外，或者默认她们只能自成一个小圈子。',
+          '玛格丽特认为德廉美修道院不再值得她为之一战了。她带领女修们，在一个清晨离开了。'],
+    choices:[{ label:'去找莉娜', desc:'她没有和女修们一起走', go:war3Lina }] });
+}
+function war3Lina(){
+  F.margaretLeft = true;
+  fight({
+    eyebrow:'判定 · 挽留莉娜', title:'莉娜的去留（主要判定：智慧）', rail:3,
+    text:'莉娜没有和女修们一起离开。你觉得，或许可以去找她聊一聊，试着挽留一下。',
+    playerLabel:'德廉美 · 智慧 '+S.wisdom, enemyLabel:'莉娜的犹豫',
+    value:S.wisdom, extra:0, enemy:3, allowDraw:false,
+    win:{ note:'挽留成功：莉娜留下', btn:'继续',
+      go:()=>{ F.linaStays = true; say('挽留成功：莉娜决定留下');
+        scene({ eyebrow:'条件事件 · 有 CG', title:'她留下了', tag:'后续可选择莉娜一并出战', rail:3, cg:'barrel', cgCap:'她的「小玩意儿」摊了一地',
+          text:['莉娜犹豫了一下，还是决定留下。她把那些「小玩意儿」重新摊开在桌上，说：反正我本来也不擅长骑马。'],
+          choices:[{ label:'进入夜袭', desc:'', go:war4 }] }); } },
+    lose:{ note:'挽留失败：莉娜离开', btn:'继续',
+      go:()=>{ F.linaStays = false; say('挽留失败：莉娜离开了队伍');
+        scene({ eyebrow:'条件事件 · 有 CG', title:'她也走了', tag:'队伍只剩下三个人', rail:3, cg:'figure', cgCap:'空下来的工作台',
+          text:['莉娜想了很久，最后摇了摇头。她收起自己的东西，跟着女修们的方向走了。'],
+          choices:[{ label:'进入夜袭', desc:'', go:war4 }] }); } }
+  });
+}
+
+/* --- 第四场：夜袭修道院 --- */
+function war4(){ F.stage = 4; war4Report(); }
+function war4Report(){
+  scene({ eyebrow:'战报 · 无 CG', title:'皮埃尔的失踪', tag:'河对岸的骚动', rail:4,
+    text:['这天，河对岸传来了一些异常的骚动。军队似乎抽调了一小部分人四处搜寻，不知道在找什么。',
+          '一名负责侦察的修士回来报告说：似乎是皮埃尔失踪了。听说他还带走了圣弗洛朗修道院很重要的东西，军队和圣弗洛朗正在四处找他。',
+          '菲利普认为对方内乱，正是出手的好时机，应该趁此一举拿下圣弗洛朗。你表示赞同——就定在今晚夜袭。'],
+    choices:[{ label:'亲自挂帅', desc:'带领我方全部主力', go:war4Party }] });
+}
+function war4Party(){
+  const p = partyList();
+  scene({ eyebrow:'第五阶段 · 战争 4/5', title:'夜袭修道院', tag:'赌上德廉美全力的一战', rail:4, cg:'gate', cgCap:'那扇沉重的石门',
+    text:['制定作战计划时，你决定亲自挂帅，带领我方的全部主力。',
+          '出战人员：<b>'+p.join('、')+'</b>'],
+    choices:[{ label:'出发', desc:'', go:war4Fight }] });
+}
+function war4Fight(){
+  const p = partyList();
+  const team = (p.indexOf('玛格丽特')>=0 ? 1 : 0) + (p.indexOf('莉娜')>=0 ? 1 : 0);
+  const val = Math.floor((S.strength + S.fame) / 2);
+  fight({
+    eyebrow:'战斗 · 骰子判定 4', title:'夜袭圣弗洛朗（综合判定：力量+声望）', rail:4,
+    text:'这是赌上德廉美全力的一战。',
+    playerLabel:'德廉美 · 综合 '+val+' +'+team+'（队伍）', enemyLabel:'圣弗洛朗守军',
+    value:val, extra:team, enemy:5, allowDraw:false,
+    win:{ btn:'破门', go:war4Pierre },
+    lose:{ btn:'……', go:()=>ending(2, 'raid') }
+  });
+}
+function war4Pierre(){
+  const t = F.agnes
+    ? ['即将破开圣弗洛朗的大门的时候，出现了一个意想不到的人——皮埃尔。他依然是那副十分怯懦的样子，但怀里鼓鼓囊囊，似乎藏了些什么。',
+       '皮埃尔主动献来了他偷走的、引发军队和圣弗洛朗一直在找的东西：圣弗洛朗的教典。他竟跪了下来，请求德廉美能够撕碎这本名为教导、实为禁锢的教典。',
+       '你已经为艾格尼丝打破过一次入院准则了，并不介意再打破一次。你扶起皮埃尔，邀请他入队，一同见证他想要见到的。']
+    : ['即将破开圣弗洛朗的大门的时候，出现了一个意想不到的人——皮埃尔。他依然是那副十分怯懦的样子，但怀里鼓鼓囊囊，似乎藏了些什么。',
+       '皮埃尔主动献来了他偷走的、引发军队和圣弗洛朗一直在找的东西：圣弗洛朗的教典。他竟跪了下来，请求德廉美能够撕碎这本名为教导、实为禁锢的教典。',
+       '你答应了，表示这本来就是你们想要做的。皮埃尔没有再多说什么，转身离开了。'];
+  scene({ eyebrow:'固定事件 · 有 CG', title:'皮埃尔', tag:F.agnes?'分支 7-A':'分支 7-B', rail:4, cg:'scroll', cgCap:'一本教典',
+    text:t, choices:[{ label:'推开石门', desc:'', go:()=>{ if(F.agnes){ F.pierre = true; say('事件：皮埃尔入队'); } war5(); } }] });
+}
+
+/* --- 决战 --- */
+function war5(){ F.stage = 5; war5Intro(); }
+function war5Intro(){
+  scene({ eyebrow:'决战 · 圣弗洛朗的大钟', title:'门内比想象中安静', tag:'决战开启', rail:5, cg:'bell', cgCap:'规定了全院起居的大钟',
+    text:['德廉美众人终于破开那扇沉重的石门的时候，几乎人人浴血。可圣弗洛朗门内比所有人想象的都要安静肃穆，似乎完全没有受到外面的战事影响，甚至主院一个人也没有。',
+          '众人缓慢向四周摸索，也只见到了在塔楼窗口处沉默地注视着一切的普通修士们。',
+          '你们来到了那口规定了全院修士起居行动的大钟下。那里坐着另一个意想不到的人——教皇。年老而臃肿的教皇疲惫地缩在椅子里，孱弱到似乎连手指都没办法动。他似乎并不足以成为你们要与之斗争的对象。',
+          '菲利普提剑上前，利落地将剑刃抵上教皇的脖颈。教皇的瞳孔因为恐惧而紧缩，但依旧无法驱动他的身体。菲利普感觉到不对，但剑刃已经在往前送了，几乎就要刺破皮肤，划出血线。',
+          '此时，一道莫名的力量狠狠撞击了一下菲利普的虎口。他的剑落在地上。',
+          '阿尔蒙从阴影中走出。'],
+    choices:[{ label:'与他对峙', desc:'', go:war5Debate }] });
+}
+function war5Debate(){
+  scene({ eyebrow:'决战 · 价值观的论辩', title:'灵与肉的完全分离', tag:'进入最终判定', rail:5, cg:'bell', cgCap:'钟楼下的阴影',
+    text:['对此，阿尔蒙的解释是：孱弱的教皇将自己的身体完全献给了上帝，实现了灵与肉的完全分离。禁欲和苦修，不就是为了遏制身体低贱的欲望，让魂灵得以上升到更高的高度吗？所有人都应该遵守天赐的敕令，这是摆脱苦难的唯一方法。',
+          '你并不认同。二人进行了一番价值观层面的论辩。',
+          '阿尔蒙被激怒了。'],
+    choices:[{ label:'进入最终判定', desc:'三连判定：智慧 → 力量 → 综合', go:war5A }] });
+}
+function war5A(){
+  fight({
+    eyebrow:'决战 · 判定 5-1', title:'弥撒（主要判定：智慧）', rail:5,
+    text:'阿尔蒙吟诵的弥撒似乎带有蛊惑人心的力量。',
+    playerLabel:'德廉美 · 智慧 '+S.wisdom, enemyLabel:'阿尔蒙的弥撒',
+    value:S.wisdom, extra:0, enemy:4, allowDraw:false,
+    win:{ btn:'进入 5-2', go:war5B }, lose:{ btn:'……', go:()=>ending(2, 'mass') }
+  });
+}
+function war5B(){
+  fight({
+    eyebrow:'决战 · 判定 5-2', title:'敕令的锁链（主要判定：力量）', rail:5,
+    text:'阿尔蒙手中敕令的华美封皮，竟生出粗壮的锁链。',
+    playerLabel:'德廉美 · 力量 '+S.strength, enemyLabel:'敕令的锁链',
+    value:S.strength, extra:0, enemy:4, allowDraw:false,
+    win:{ btn:'进入 5-3', go:war5C }, lose:{ btn:'……', go:()=>ending(2, 'chain') }
+  });
+}
+function war5C(){
+  const p = partyList();
+  const team = (p.indexOf('玛格丽特')>=0?1:0) + (F.pierre?1:0);
+  const val = Math.floor((S.wisdom + S.strength + S.fame) / 3);
+  fight({
+    eyebrow:'决战 · 判定 5-3', title:'1v1（综合判定）', rail:5,
+    text:'敕令脱手，很快被一剑斩碎。阿尔蒙与你 1v1。',
+    playerLabel:'德廉美 · 综合 '+val+' +'+team+'（同行者）', enemyLabel:'阿尔蒙',
+    value:val, extra:team, enemy:5, allowDraw:false,
+    win:{ btn:'打碎大钟', go:()=>ending(4) }, lose:{ btn:'……', go:()=>ending(3) }
+  });
+}
+
+/* ==========================================================================
+   结局
+   ========================================================================== */
+const ENDINGS = {
+  1: { t:'酒是甘美的夏夜', s:'可以使人无忧地安眠',
+       p:'你每一次都选择了酒。\n\n于是你喝晕了，进入了一场酣美的睡眠。屏幕彻底黑下来，什么都没有发生——没有战争，没有钟声，也没有任何人来叫醒你。\n\n再次睁开眼的时候，已经是十天之后。一切都非常平淡。什么都没有改变，什么也没有发生。\n\n只有菲利普坐在床边，告诉你：你已经昏睡了十天。' },
+  2: { t:'折戟', s:'没能走到大钟下的最后一程',
+       p:{
+         raid:'夜袭失败了。火把在河对岸一盏一盏地熄灭，德廉美的主力没能攻开那扇石门。\n\n你倒在了圣弗洛朗门前的台阶上，最后一次听见的是塔楼窗口处沉默的目光——那些修士从头到尾都没有下来。',
+         mass:'阿尔蒙的弥撒压过了你的声音。那些句子并不锋利，却像水一样灌进耳朵里，让人连反驳的力气都慢慢失去。\n\n你没能走过去。',
+         chain:'敕令生出的锁链比你想象的更沉。它们缠上来的时候，你才发现自己的力量原来可以这样轻易地被称量。\n\n你没能挣开。'
+       } },
+  3: { t:'苦修无穷', s:'灵魂上升才是永恒的归途',
+       p:'你们最终还是败给了阿尔蒙口中的那套苦修和教义。\n\n阿尔蒙似乎被破碎的敕令激起了无穷的力量，将众人悉数掀飞。你重重落在地上，无力地看着阿尔蒙这个怪物又重新从钟楼底下的暗格里摸出了一本敕令。他只是整理了一下衣袍，仿佛什么都没有发生一样，正在做一场普通的弥撒。\n\n苦修生涯无穷无尽，灵魂上升才是永恒的归途。此岸与肉身的欢愉都是可以舍弃之物。\n\n阿尔蒙重新做回了圣弗洛朗的长老。圣弗洛朗修道院规模逐步扩大，已经横跨河谷两岸。葡萄园也从此拆除。\n\n主角与同伴穿着圣弗洛朗端庄严肃的灰色修士袍，正登上远洋的船只。阿尔蒙长老亲自来送行，叮嘱他们此行要向那些蛮荒偏僻的岛屿们宣传纯洁的教义。' },
+  4: { t:'打碎大钟', s:'然后呢？',
+       p:'阿尔蒙的力气已经完全耗尽。你们最终打碎了圣弗洛朗的那口大钟。哗啦一声，这座禁锢了所有人的金属造物就化成了碎片。阿尔蒙很快被绑了起来，教皇本来就半死不活，但也被绑了几圈扔在一边。\n\n圣弗洛朗现在归德廉美所有了。穿着灰色袍子的修士们沉默地走下楼，还没有接受自己的新身份。菲利普试图告诉所有人：你们不再被钟声、弥撒和日课限制了。但有人低声问：如果不祷告，那我要如何生活呢？菲利普不太明白他们在恐惧什么——随心所欲的生活啊！修士们面面相觑，似乎并不明白那是什么意思。\n\n而主角低下头，若有所思。德廉美真的要接纳这些圣弗洛朗的修士吗？他们奉行着两套完全不一样的价值观。现在是德廉美战胜了圣弗洛朗吗？这代表什么呢？开放的草地战胜了古板的钟声吗？然后把圣弗洛朗的所有人拉到德廉美门前，比照入院标准一条一条地择选吗？\n\n你想到玛格丽特，想到皮埃尔，想到艾格尼丝。\n\n觉得好像不止这一种答案。' }
+};
+/* ==========================================================================
+   篇章结构
+   文档边界：《剧情细纲-1007》与《第一部分数值说明》均止于第一部结局四，
+   《数值（第一部分）》末列标着 tbc.。第二~四部目前没有任何细纲 / 数值文档，
+   因此这里只挂占位节点：status == 'tbd' 的点开显示「这是占位符」。
+   文档到位后把它改成 'done'，并在 startPart(n) 里接入对应流程即可。
+   ========================================================================== */
+const CHAPTERS = [
+  { n:1, name:'无钟之地', status:'done',
+    note:'序章 → 主角的一日 → 葡萄园 → 事变 → 战备 → 四场战争 + 决战 → 结局一~四' },
+  { n:2, name:'（待定）', status:'tbd', note:'尚无细纲与数值文档' },
+  { n:3, name:'（待定）', status:'tbd', note:'尚无细纲与数值文档' },
+  { n:4, name:'（待定）', status:'tbd', note:'尚无细纲与数值文档' }
+];
+const CN_NUM = ['一','二','三','四','五','六'];
+function paintChapters(){
+  const box = $('chapters');
+  box.innerHTML = CHAPTERS.map(c=>{
+    const cls = c.status === 'done' ? 'done' : (c.status === 'locked' ? 'locked' : 'tbd');
+    const tag = c.status === 'done'  ? '<small>已完结</small>'
+              : c.status === 'locked'? '<small>未解锁</small>'
+              : '<small>'+c.note+'</small><span class="ph">这是占位符</span>';
+    return '<div class="chapter-card '+cls+'" data-part="'+c.n+'"><b>第'+CN_NUM[c.n-1]+'部 · '+c.name+'</b>'+tag+'</div>';
+  }).join('');
+  box.querySelectorAll('.chapter-card[data-part]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const c = CHAPTERS[(+el.getAttribute('data-part')) - 1];
+      const head = '第'+CN_NUM[c.n-1]+'部 · '+c.name;
+      if(c.status === 'done'){
+        modal(head, c.note + '\n\n（本轮你走完了这一部的全部流程。）', '篇章', [{ label:'知道了' }]);
+      } else if(c.status === 'tbd'){
+        modal('这是占位符', '目前没有可用的细纲与数值，所以这里先空着，入口已预留。', '篇章', [{ label:'知道了' }]);
+      }
+    });
+  });
+}
+/* 后续篇章的流程入口（占位）。文档到位后在此分派到各部的第一个节点。 */
+function startPart(n){
+  const c = CHAPTERS[n-1];
+  if(!c || c.status !== 'done'){ modal('这是占位符', '第'+CN_NUM[n-1]+'部尚未接入流程。', '篇章', [{ label:'知道了' }]); return; }
+  reset(); pro(0);
+}
+
+function ending(n, reason){
+  const e = ENDINGS[n];
+  const body = (n === 2 && typeof e.p === 'object') ? e.p[reason || 'raid'] : e.p;
+  show('ending');
+  $('endingTitle').innerHTML = e.t + '<div style="font-size:.42em;letter-spacing:.1em;color:#796c59;margin-top:10px">'+e.s+'</div>';
+  $('endingText').textContent = body;
+  $('endingStats').innerHTML = STAT_ORDER.map(k=>
+    '<div class="stat"><small>'+STAT_NAME[k]+'</small><strong>'+((k==='drink'&&!F.drinkRevealed)?'？':S[k])+'</strong></div>').join('');
+  paintChapters();
+}
+
+/* ==========================================================================
+   启动
+   ========================================================================== */
+function startGame(){ reset(); pro(0); }
+function exitGame(){
+  document.querySelector('.title-inner h1').textContent = '下次再见';
+  document.querySelector('.title-menu').innerHTML = '<button type="button" class="title-button" id="returnBtn">返回标题</button>';
+  $('returnBtn').addEventListener('click', ()=>location.reload());
+}
+$('startBtn').addEventListener('click', startGame);
+$('exitBtn').addEventListener('click', exitGame);
+$('restartBtn').addEventListener('click', ()=>location.reload());
+document.addEventListener('keydown', e=>{
+  if(e.key === 'Enter' && $('intro').classList.contains('active')) startGame();
+});
+reset();
+</script>
+</body>
+</html>
