@@ -46,6 +46,8 @@ button{font:inherit;border:0;cursor:pointer;transition:.18s}
 .phase-head .eyebrow{flex:0 0 auto;white-space:nowrap}
 .phase-head h2{font-size:clamp(22px,2.8vw,38px);color:#4d3022;margin:0}
 .phase-head .tag{background:#d8c39766;padding:6px 10px;border-radius:3px;font-size:13px;color:var(--muted);white-space:nowrap;flex:0 0 auto}
+.phase-head .party{flex:0 0 auto;justify-content:flex-end;gap:4px;max-width:min(40%,360px)}
+.phase-head .party span{padding:2px 9px;font-size:11px}
 
 /* ===== 版式 ===== */
 .scene-layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(240px,.7fr);grid-template-rows:minmax(0,1fr);gap:20px;flex:1;min-height:0;overflow:hidden}
@@ -187,6 +189,7 @@ button{font:inherit;border:0;cursor:pointer;transition:.18s}
 <section id="scene" class="screen game-page">
   <div class="phase-head">
     <div><div class="eyebrow" id="scEyebrow"></div><h2 id="scTitle"></h2></div>
+    <div class="party" id="scPartyHead"></div>
     <span class="tag" id="scTag"></span>
   </div>
   <div id="warRail" class="war-rail" hidden></div>
@@ -323,7 +326,9 @@ function partyHTML(){
 }
 function paintSide(){
   $('sceneStats').innerHTML = statHTML();
-  $('partyInfo').innerHTML = partyHTML();
+  const p = partyHTML();
+  $('partyInfo').innerHTML = p;
+  $('scPartyHead').innerHTML = p;
   $('sceneLog').innerHTML = logHTML(14);
 }
 
