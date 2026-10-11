@@ -106,11 +106,8 @@ button{font:inherit;border:0;cursor:pointer;transition:.18s}
 .party span{background:#d8c39766;border:1px solid #b9975d88;border-radius:99px;padding:3px 10px;font-size:12px;color:#5d4a33}
 .party span.gone{opacity:.4;text-decoration:line-through}
 
-/* ===== 战斗页 ===== */
-#battleScreen.active{justify-content:center;align-items:center;gap:clamp(6px,1.2vh,14px);padding:clamp(12px,2.5vh,32px) clamp(16px,3vw,56px)}
-#battleScreen .eyebrow{text-align:center;flex:0 0 auto}
-#battleScreen h2{text-align:center;font-size:clamp(20px,2.6vw,34px);color:#4d3022;margin:0;flex:0 0 auto}
-.battle-card{width:min(100%,900px);min-height:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(5px,1.2vh,14px);border:1px solid #c3a265;border-radius:7px;background:#fffaf0d9;box-shadow:0 8px 20px #65451d18,inset 0 1px #fff;padding:clamp(12px,2.2vh,28px) clamp(14px,2.5vw,32px)}
+/* ===== 战斗嵌入剧情页 ===== */
+.battle-card{width:100%;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(5px,1.2vh,14px);border:1px solid #c3a265;border-radius:7px;background:#fffaf0d9;box-shadow:0 8px 20px #65451d18,inset 0 1px #fff;padding:clamp(12px,2.2vh,28px) clamp(14px,2.5vw,32px)}
 .battle-card>p{font-size:clamp(12px,1.3vw,15px);line-height:1.6;text-align:center;color:#594d3c;margin:0}
 .versus{display:grid;grid-template-columns:1fr auto 1fr;gap:clamp(8px,1.5vw,18px);align-items:stretch;text-align:center;margin:0}
 .army{display:flex;align-items:baseline;justify-content:center;gap:8px;border-radius:7px;padding:clamp(8px,1.6vh,18px) 12px;background:linear-gradient(145deg,#f1e4c5,#e4d2a6);border:2px solid #bb9552;box-shadow:inset 0 1px #fff,0 3px #c2a86d}
@@ -155,7 +152,7 @@ button{font:inherit;border:0;cursor:pointer;transition:.18s}
   .war-rail{grid-template-columns:repeat(5,1fr);gap:4px}
   .rail-node{padding:5px 6px;font-size:9px}.rail-node b{font-size:10px}
   .cg-art{height:80px}
-  #battleScreen.active{padding:12px;gap:8px}.battle-card{padding:12px;gap:8px}
+  .battle-card{padding:12px;gap:8px}
   .versus{gap:6px}.army{flex-direction:column;align-items:center;gap:2px;padding:7px 6px}
   .army strong{font-size:26px}.dice-box{grid-template-columns:1fr;gap:5px}
   .die{width:22px;height:22px;font-size:12px}
@@ -209,26 +206,6 @@ button{font:inherit;border:0;cursor:pointer;transition:.18s}
       <div class="rule"></div>
       <div id="sceneLog" class="log"></div>
     </aside>
-  </div>
-</section>
-
-<!-- 战斗页 -->
-<section id="battleScreen" class="screen game-page">
-  <div class="eyebrow" id="battleEyebrow">战斗 · 属性检定</div>
-  <h2 id="battleTitle">遭遇战</h2>
-  <div class="battle-card">
-    <p id="battleText"></p>
-    <div class="versus">
-      <div class="army"><small id="playerLabel">德廉美</small><strong id="playerDice">1</strong><span class="unit">枚骰子</span></div>
-      <div class="vs">VS</div>
-      <div class="army enemy"><small id="enemyLabel">敌军</small><strong id="enemyDice">1</strong><span class="unit">枚骰子</span></div>
-    </div>
-    <div id="diceRolls" class="dice-box"></div>
-    <div id="battleResult" class="result"></div>
-    <div class="actions">
-      <button id="rollBtn" type="button" class="primary">同时掷骰</button>
-      <button id="backMapBtn" type="button" class="primary" style="display:none">继续</button>
-    </div>
   </div>
 </section>
 
@@ -409,28 +386,47 @@ function modal(title, text, eyebrow, actions){
   $('eventModal').classList.add('open');
 }
 
-/* ---------- 战斗 ---------- */
+/* ---------- 战斗（嵌入剧情页左侧） ---------- */
 let pending = null;
 function fight(o){
-  show('battleScreen');
-  $('battleEyebrow').textContent = o.eyebrow || '战斗 · 属性检定';
-  $('battleTitle').textContent = o.title;
-  $('battleText').textContent = o.text;
-  $('playerLabel').textContent = o.playerLabel || ('德廉美 · ' + (o.statLabel||''));
-  $('enemyLabel').textContent  = o.enemyLabel || '敌军';
+  show('scene');
+
+  $('scEyebrow').textContent = o.eyebrow || '战斗 · 属性检定';
+  $('scTitle').textContent = o.title;
+  $('scTag').textContent = o.tag || '';
+  $('scCg').innerHTML = ''; $('scCg').hidden = true;
+  $('scSub').hidden = true;
+  if(o.rail !== undefined) paintRail(o.rail);
+  else if(F.stage) paintRail(F.stage);
+  else hideRail();
 
   const pv = o.value, extra = o.extra || 0;
   const pd = CFG.dice(pv) + extra, ed = o.enemy;
-  $('playerDice').textContent = pd;
-  $('enemyDice').textContent  = ed;
-  $('diceRolls').innerHTML = '';
-  $('battleResult').textContent = '';
-  $('rollBtn').style.display = 'inline-flex';
-  $('rollBtn').textContent = '同时掷骰';
-  const back = $('backMapBtn'); back.style.display = 'none';
+  const playerLabel = o.playerLabel || ('德廉美 · ' + (o.statLabel||''));
+  const enemyLabel = o.enemyLabel || '敌军';
 
   pending = { pd, ed, o };
-  $('rollBtn').onclick = roll;
+
+  $('scText').innerHTML =
+    '<p>'+o.text+'</p>'+
+    '<div class="battle-card" style="margin-top:8px">'+
+      '<div class="versus">'+
+        '<div class="army"><small>'+playerLabel+'</small><strong>'+pd+'</strong><span class="unit">枚骰子</span></div>'+
+        '<div class="vs">VS</div>'+
+        '<div class="army enemy"><small>'+enemyLabel+'</small><strong>'+ed+'</strong><span class="unit">枚骰子</span></div>'+
+      '</div>'+
+      '<div id="diceRolls" class="dice-box"></div>'+
+      '<div id="battleResult" class="result"></div>'+
+    '</div>';
+
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'choice single';
+  btn.innerHTML = '<b>同时掷骰</b>';
+  btn.addEventListener('click', roll);
+  $('scChoices').innerHTML = '';
+  $('scChoices').appendChild(btn);
+
+  paintSide();
 }
 function roll(){
   const { pd, ed, o } = pending;
@@ -442,17 +438,23 @@ function roll(){
     '<div><b>敌方</b>'+er.map(x=>'<span class="die">'+x+'</span>').join('')+'<span class="dice-sum">= '+es+'</span></div>';
   let r = ps > es ? '胜' : ps < es ? '败' : '平';
   $('battleResult').textContent = (r==='平' ? '平局' : r+'利') + ' · ' + ps + ' : ' + es;
-  $('rollBtn').style.display = 'none';
   if(!o.allowDraw && r === '平') r = '败';
 
   const branch = r==='胜' ? o.win : r==='败' ? o.lose : o.draw;
   if(!branch){ o.done && o.done(r); return; }
   add(branch.eff);
   if(branch.note) say(branch.note);
-  const back = $('backMapBtn');
-  back.style.display = 'inline-flex';
-  back.textContent = branch.btn || '继续';
-  back.onclick = ()=> branch.go ? branch.go(r) : (o.done && o.done(r));
+
+  const back = document.createElement('button');
+  back.type = 'button'; back.className = 'choice single';
+  back.innerHTML = '<b>'+(branch.btn || '继续')+'</b>'+(branch.note?'<span>'+branch.note+'</span>':'');
+  back.addEventListener('click', ()=>{
+    branch.go ? branch.go(r) : (o.done && o.done(r));
+  });
+  $('scChoices').innerHTML = '';
+  $('scChoices').appendChild(back);
+
+  paintSide();
 }
 
 /* ==========================================================================
