@@ -142,6 +142,10 @@ button{font:inherit;border:0;cursor:pointer;transition:.15s;background:none}
 .favor-row>b{flex:0 0 26px;text-align:right;font-variant-numeric:tabular-nums}
 .favor-row.gone{opacity:.45;text-decoration:line-through}
 
+/* ===== 黑幕（【黑屏】舞台指示） ===== */
+#scene #blackout{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .45s;z-index:8}
+#scene #blackout.on{opacity:1}
+
 /* ===== 场景行走小人 ===== */
 #scene .walker{position:absolute;bottom:47%;left:-14%;height:46%;aspect-ratio:290/720;background-size:200% 100%;background-repeat:no-repeat;image-rendering:pixelated;z-index:3;transition:left 2.6s linear;filter:drop-shadow(3px 3px 0 #00000030);transform:scaleX(-1)}
 #scene .walker.walk{animation:walkstep .5s linear infinite}
@@ -228,6 +232,7 @@ button{font:inherit;border:0;cursor:pointer;transition:.15s;background:none}
       <div id="dlgBox" class="dlg" hidden></div>
       <div id="scChoices" class="bpanel"></div>
     </div>
+    <div id="blackout"></div>
   </div>
 </section>
 
@@ -440,6 +445,7 @@ function scene(o){
   $('scCg').hidden           = !o.cg;
   if(o.rail) paintRail(o.rail); else hideRail();
   paintSide();
+  $('blackout').classList.remove('on');
   DLG = { lines:(o.text||[]).slice(), i:0 };
   paintDlg();
   walkIn();
@@ -459,8 +465,21 @@ function scene(o){
     $('scChoices').appendChild(b);
   });
 }
+function dlgBlackoutNow(){
+  const t = DLG.lines[DLG.i];
+  const rest = t.slice(4).trim();   /* 去掉「【黑屏】」 */
+  if(rest){ DLG.lines[DLG.i] = rest; } else { DLG.i++; }
+  paintDlg();
+}
 function paintDlg(){
   const box = $('dlgBox'), done = !DLG || DLG.i >= DLG.lines.length;
+  if(!done && DLG.lines[DLG.i].indexOf('【黑屏】') === 0){
+    box.hidden = true;
+    $('scChoices').style.display = 'none';
+    $('blackout').classList.add('on');
+    setTimeout(()=>{ $('blackout').classList.remove('on'); dlgBlackoutNow(); }, 1200);
+    return;
+  }
   box.hidden = done;
   $('scChoices').style.display = done ? '' : 'none';
   if(done) return;
