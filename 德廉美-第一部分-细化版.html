@@ -476,6 +476,37 @@ function dlgSpeaker(t){
   }
   return null;
 }
+/* 50 字以上的台词自动拆分成多句：先按句末标点（。！？……），仍超长再按次级标点（，、；——） */
+function splitLongLine(t){
+  if(!t || t.length <= 50 || t.indexOf('【黑屏】') === 0) return [t];
+  const s = dlgSpeaker(t);
+  const sp = s ? s[0] : null;
+  const body = s ? s[1] : t;
+  const segs = [];
+  let buf = '';
+  for(let i = 0; i < body.length; i++){
+    const ch = body[i], nxt = body[i+1];
+    buf += ch;
+    if('。！？'.indexOf(ch) >= 0 && nxt !== '…' && nxt !== '」' && nxt !== '』' && nxt !== '"'){ segs.push(buf); buf = ''; }
+    else if(ch === '…' && body[i-1] !== '…' && nxt !== '…' && nxt !== '」' && nxt !== '』'){ segs.push(buf); buf = ''; }
+  }
+  if(buf) segs.push(buf);
+  const out = [];
+  for(let p of segs){
+    while(p.length > 50){
+      let cut = -1;
+      for(let i = 42; i >= 18; i--){
+        if(p[i] === '—'){ cut = i + 1; break; }              /* —— 双破折号整体切 */
+        if('，、；：'.indexOf(p[i]) >= 0){ cut = i; break; }
+      }
+      if(cut < 0 || cut >= p.length - 1) break;
+      out.push(p.slice(0, cut + 1));
+      p = p.slice(cut + 1);
+    }
+    if(p) out.push(p);
+  }
+  return out.map((p, i) => (i === 0 && sp) ? sp + '：' + p : p).filter(x => x && x.length);
+}
 /* 按场景内容选背景：修道院（默认）/ 战场 / 靶场 / 图书馆 / 食堂 */
 function sceneBgFor(o){
   if(o.bg) return IMG['bg' + o.bg];
@@ -494,7 +525,7 @@ function scene(o){
   if(o.rail) paintRail(o.rail); else hideRail();
   paintSide();
   $('blackout').classList.remove('on');
-  DLG = { lines:(o.text||[]).slice(), i:0 };
+  DLG = { lines:(o.text||[]).flatMap(splitLongLine), i:0 };
   paintDlg();
   if(o.lead){ leadPortrait(o.lead); } else { $('scLead').style.display = 'none'; }
   wkReset();   /* 切换场景：小人回到左侧，由玩家 A/D 走到右侧 */
