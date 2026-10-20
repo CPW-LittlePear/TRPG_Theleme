@@ -165,6 +165,9 @@ button{font:inherit;border:0;cursor:pointer;transition:.15s;background:none}
 #scene .walker.walk{animation:walkstep .5s linear infinite}
 @keyframes walkstep{0%{background-position:0 0}49.9%{background-position:0 0}50%{background-position:100% 0}100%{background-position:100% 0}}
 #scene .walker.flip{transform:scaleX(1)}
+/* 主角立绘位：序章 npc 形象 → 触发【主角立绘】指令后变身巨人立绘 */
+#scene .sc-lead{position:absolute;left:4.5%;bottom:47%;height:24%;aspect-ratio:290/720;z-index:2;pointer-events:none;background-repeat:no-repeat;background-position:left bottom;background-size:200% 100%;image-rendering:pixelated;filter:drop-shadow(3px 3px 0 #00000030);transition:height .6s ease;display:none}
+#scene .sc-lead.giant{height:42%;aspect-ratio:370/720;background-position:center bottom;background-size:contain}
 #scene .hud-hint{position:absolute;top:13%;left:3.2%;z-index:5;color:#ffe9b0b0;font-size:clamp(11px,1vw,13px);text-shadow:1px 1px 0 #0008;pointer-events:none;letter-spacing:.05em}
 
 /* ===== 场景页（画框场景 + 板上对话框） ===== */
@@ -180,6 +183,9 @@ button{font:inherit;border:0;cursor:pointer;transition:.15s;background:none}
 #scene .board{position:absolute;left:9.4%;top:53.3%;width:80%;height:44.4%;z-index:4}
 #scene .dlg{position:absolute;inset:7% 5.5% 8% 5.5%;width:auto;background:transparent;min-height:0;cursor:pointer;display:flex;align-items:center}
 #scene .dlg .txt{color:#f6ecd4;font-size:clamp(15px,1.5vw,19px);line-height:1.85;max-height:100%;padding-right:12px}
+/* 【】舞台提示：非台词，独立小字样式 */
+.dlg .stg{display:block;font-size:clamp(11px,1.05vw,13px);color:#9c8358;margin-top:8px;letter-spacing:.06em}
+#scene .dlg .stg{color:#c9b98f}
 #scene .dlg b.spk{display:block;color:#ffd98a;font-size:clamp(13px,1.25vw,16px);margin-bottom:6px;letter-spacing:.06em}
 #scene .dlg .adv{position:absolute;right:14px;bottom:8px;color:#ffe9b0;font-style:normal;font-size:14px;animation:bob .9s infinite alternate}
 #scene .bpanel{position:absolute;inset:6% 6.5% 9% 6.5%;display:flex;flex-direction:column;justify-content:center;gap:clamp(8px,1.6vh,14px);overflow-y:auto}
@@ -235,6 +241,7 @@ button{font:inherit;border:0;cursor:pointer;transition:.15s;background:none}
     <div id="warRail" class="war-rail" hidden></div>
     <div class="hud-hint">空格 / 点击 继续对话　·　A / D 移动　·　对话读完走到最右侧切换场景</div>
     <div id="scCg" class="hud-cg" hidden></div>
+    <div id="scLead" class="sc-lead"></div>
     <div id="walker" class="walker"></div>
     <div class="board">
       <div id="dlgBox" class="dlg" hidden></div>
@@ -389,8 +396,12 @@ function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.r
 
 function chipsHTML(){
   return STAT_ORDER.map(k=>{
-    const hidden = (k==='drink' && !F.drinkRevealed);
-    return '<div class="stat-chip'+(hidden?' hidden':'')+'"><small>'+STAT_NAME[k]+'</small><b>'+(hidden?'？':S[k])+'</b></div>';
+    if(k === 'drink'){
+      if(F.drinkRevealed) return '<div class="stat-chip"><small>酒量</small><b>'+S.drink+'</b></div>';
+      if(F.drinkShown)    return '<div class="stat-chip hidden"><small>酒量</small><b>？</b></div>';
+      return '';   /* 【酒量栏显现】触发前不显示 */
+    }
+    return '<div class="stat-chip"><small>'+STAT_NAME[k]+'</small><b>'+S[k]+'</b></div>';
   }).join('');
 }
 function logHTML(n){
@@ -467,6 +478,7 @@ function scene(o){
   $('blackout').classList.remove('on');
   DLG = { lines:(o.text||[]).slice(), i:0 };
   paintDlg();
+  if(o.lead){ leadPortrait(o.lead); } else { $('scLead').style.display = 'none'; }
   wkReset();   /* 切换场景：小人回到左侧，由玩家 A/D 走到右侧 */
   $('scChoices').innerHTML = '';
   (o.choices||[]).forEach(c=>{
@@ -501,10 +513,20 @@ function paintDlg(){
   }
   box.hidden = done;
   $('scChoices').style.display = done ? '' : 'none';
-  if(done){ wkArmed = true; return; }   /* 对话读完：允许走到最右侧切换场景 */
-  const t = DLG.lines[DLG.i];
-  const sp = dlgSpeaker(t);
-  box.innerHTML = '<div class="txt">'+(sp ? '<b class="spk">'+sp[0]+'</b>'+sp[1] : t)+'</div><i class="adv">▼</i>';
+  if(done){ wkArmed = true; return; }
+  const raw = DLG.lines[DLG.i];
+  /* 【】不是台词：效果类指令执行后移除，其余作为舞台提示小字显示 */
+  const notes = [];
+  const disp = raw.replace(/【([^】]+)】/g, (m, inner)=>{
+    if(inner.indexOf('酒量栏显现') === 0){ F.drinkShown = true; paintSide(); return ''; }
+    if(inner.indexOf('主角立绘') >= 0){ leadPortrait('giant'); return ''; }
+    notes.push(inner);
+    return '';
+  }).trim();
+  const sp = dlgSpeaker(disp);
+  const body = sp ? '<b class="spk">'+sp[0]+'</b>'+sp[1] : disp;
+  const noteHTML = notes.length ? '<div class="stg">※ ' + notes.join('　') + '</div>' : '';
+  box.innerHTML = '<div class="txt">'+body+noteHTML+'</div><i class="adv">▼</i>';
   const txt = box.querySelector('.txt'); if(txt) txt.scrollTop = 0;
 }
 function dlgNext(){
@@ -521,6 +543,18 @@ function wkReset(){
   wk.style.transition = 'none';
   wk.style.left = '12%';
   wkArmed = true;
+}
+/* ---------- 主角立绘：npc 形象 ↔ 巨人立绘（【主角立绘…】指令） ---------- */
+function leadPortrait(mode){
+  const el = $('scLead'); if(!el) return;
+  el.style.display = '';
+  if(mode === 'giant'){
+    el.style.backgroundImage = 'url(' + IMG.lead + ')';
+    el.classList.add('giant');
+  } else {
+    el.style.backgroundImage = 'url(' + IMG.walker + ')';
+    el.classList.remove('giant');
+  }
 }
 
 /* ---------- A / D 左右移动；对话读完后走到最右侧 → 切换下一场景 ---------- */
@@ -668,7 +702,7 @@ function cgHTML(key, cap){
    Prologue 德廉美
    ========================================================================== */
 const PROLOGUE = [
-  { eyebrow:'Prologue · 德廉美', title:'一个闪亮的酒壶', tag:'', cg:'hu', cgCap:'大厅的长桌与昨夜剩下的半壶酒',
+  { eyebrow:'Prologue · 德廉美', title:'一个闪亮的酒壶', tag:'', cg:'hu', cgCap:'大厅的长桌与昨夜剩下的半壶酒', lead:'npc',
     text:['我：哈！',
           '托马斯：哈！真是没办法想象，要是德廉美没有酒，会是什么样子。',
           '我：是啊。',
@@ -679,14 +713,14 @@ const PROLOGUE = [
           '你举起酒杯，托马斯也一样。碰杯过后，你仰头接住最后一滴酒液，擦擦嘴起身前去晨祷。',
           '我：在这里，我不觉得我和大家有什么不同——除了喝酒！'],
     choices:[{ label:'前去晨祷', desc:'', go:()=>pro(1) }] },
-  { eyebrow:'Prologue · 德廉美', title:'无固定形式的晨祷', tag:'三种开始方式', cg:'figure', cgCap:'或唱诵，或聚集，或倒立',
+  { eyebrow:'Prologue · 德廉美', title:'无固定形式的晨祷', tag:'三种开始方式', cg:'figure', cgCap:'或唱诵，或聚集，或倒立', lead:'giant',
     text:['走出大厅，开阔的草坪映入眼中，刻着「随心所欲，各行其是」的石碑矗立在或三两围坐，或骑射运动的修士身边。',
           '德廉美修道院的晨祷并无固定的时间与形式，此时此刻，你感到身心舒畅，想这样开始晨祷：'],
     choices:[
       { label:'原地唱诵赞美诗', desc:'', go:()=>pro(2) },
       { label:'加入草坪上一群正在晨祷的修士', desc:'', go:()=>pro(2) },
       { label:'在石碑边倒立', desc:'', go:()=>pro(2) } ] },
-  { eyebrow:'Prologue · 德廉美', title:'玛格丽特与 Picotin', tag:'女修中最好的马术师', cg:'sword', cgCap:'胸革上挂着丝绒囊袋',
+  { eyebrow:'Prologue · 德廉美', title:'玛格丽特与 Picotin', tag:'女修中最好的马术师', cg:'sword', cgCap:'胸革上挂着丝绒囊袋', lead:'giant',
     text:['晨光的沐浴中，你用心中所欲的方法赞颂新生。唱诗的歌声、游戏的欢笑、鲁特琴弦轻响，与清风和作一处，一同在晨光下飘荡。',
           '玛格丽特：嘿，早上好，阁下！',
           '我：早上好，玛格丽特。',
@@ -701,7 +735,7 @@ const PROLOGUE = [
           '玛格丽特：是，莉娜对着绣像打了半个月呢。好在这小姑娘喜欢。好了，晨练要开始了。回见！',
           '玛格丽特矫健地翻身上马，离开了。'],
     choices:[{ label:'目送她离开', desc:'', go:()=>pro(3) }] },
-  { eyebrow:'Prologue · 德廉美', title:'德廉美的由来', tag:'菲利普邀你明日赴葡萄园', cg:'gate', cgCap:'刻着院训的石碑与拱门',
+  { eyebrow:'Prologue · 德廉美', title:'德廉美的由来', tag:'菲利普邀你明日赴葡萄园', cg:'gate', cgCap:'刻着院训的石碑与拱门', lead:'giant',
     text:['老修士：很久很久以前，巨人的先祖格朗古杰，也可以叫他「大肚量」。邻国国王霹雳火，为一桩糕饼纠纷起兵入侵国土，战火席卷乡野。远在巴黎求学的儿子卡冈都亚接到消息，即刻动身归国，联手约翰修士迎战敌军。约翰修士骁勇无畏，仅凭一根十字架木棍就奋勇杀敌。卡冈都亚击溃来犯之敌，平定战乱。战事结束，为酬谢约翰修士的功绩，他下令修建起这座德廉美修道院——这便是这座修道院的肇始。',
           '院中，一位年长的修士正带着新入院的修士参观。新修士们好奇地打量着周身的一切，不少人脸上闪动着不可思议的神情。',
           '老修士：这院墙虽然并非巨人亲手垒起，却是他们以王权与财力，托举这座院落诞生。往后数代巨人，也曾在此研习学问、长大成人……',
@@ -729,7 +763,7 @@ const PROLOGUE = [
 ];
 function pro(i){
   const p = PROLOGUE[i];
-  scene({ eyebrow:p.eyebrow, title:p.title, tag:p.tag, cg:p.cg, cgCap:p.cgCap, text:p.text, choices:p.choices });
+  scene({ eyebrow:p.eyebrow, title:p.title, tag:p.tag, cg:p.cg, cgCap:p.cgCap, text:p.text, choices:p.choices, lead:p.lead });
 }
 
 /* ==========================================================================
@@ -1482,7 +1516,7 @@ $('endGo').addEventListener('click', ()=>show('intro'));
 const DEMO_CH = [
   { l:'Prologue · 德廉美', d:'序章：一个闪亮的酒壶', s:null, f:null,
     go:()=>chapter('Prologue','德廉美','Thélème', ()=>pro(0)) },
-  { l:'Chapter I · 寻常一日', d:'一天七个时段的选择', s:null, f:null, go:runDay },
+  { l:'Chapter I · 寻常一日', d:'一天七个时段的选择', s:null, f:{drinkShown:true}, go:runDay },
   { l:'Chapter II · 饮酒于此', d:'葡萄园 · 圣徒瞻礼日',
     s:{wisdom:300,strength:300,fame:300,drink:650}, f:{drinkRevealed:true}, go:runVineyard },
   { l:'Chapter III · 无火起烟', d:'被涂毁的院训 → 教皇发兵',
