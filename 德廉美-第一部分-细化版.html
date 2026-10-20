@@ -143,10 +143,10 @@ button{font:inherit;border:0;cursor:pointer;transition:.15s;background:none}
 .favor-row.gone{opacity:.45;text-decoration:line-through}
 
 /* ===== 场景行走小人 ===== */
-#scene .walker{position:absolute;bottom:47%;left:-14%;height:46%;aspect-ratio:290/720;background-size:200% 100%;background-repeat:no-repeat;image-rendering:pixelated;z-index:3;transition:left 2.6s linear;filter:drop-shadow(3px 3px 0 #00000030)}
+#scene .walker{position:absolute;bottom:47%;left:-14%;height:46%;aspect-ratio:290/720;background-size:200% 100%;background-repeat:no-repeat;image-rendering:pixelated;z-index:3;transition:left 2.6s linear;filter:drop-shadow(3px 3px 0 #00000030);transform:scaleX(-1)}
 #scene .walker.walk{animation:walkstep .5s linear infinite}
 @keyframes walkstep{0%{background-position:0 0}49.9%{background-position:0 0}50%{background-position:100% 0}100%{background-position:100% 0}}
-#scene .walker.flip{transform:scaleX(-1)}
+#scene .walker.flip{transform:scaleX(1)}
 #scene .hud-hint{position:absolute;top:20.5%;left:3.2%;z-index:5;color:#ffe9b0b0;font-size:clamp(11px,1vw,13px);text-shadow:1px 1px 0 #0008;pointer-events:none;letter-spacing:.05em}
 
 /* ===== 场景页（画框场景 + 板上对话框） ===== */
