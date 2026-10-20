@@ -223,7 +223,7 @@ button{font:inherit;border:0;cursor:pointer;transition:.15s;background:none}
       <div id="sceneStats" class="chips"></div>
     </div>
     <div id="warRail" class="war-rail" hidden></div>
-    <div class="hud-hint">A / D 或 ← → 移动　·　走到最右侧继续</div>
+    <div class="hud-hint">空格 / 点击 继续对话　·　A / D 移动　·　对话读完走到最右侧切换场景</div>
     <div id="scCg" class="hud-cg" hidden></div>
     <div id="walker" class="walker"></div>
     <div class="board">
@@ -443,7 +443,7 @@ function scene(o){
   $('blackout').classList.remove('on');
   DLG = { lines:(o.text||[]).slice(), i:0 };
   paintDlg();
-  walkIn();
+  wkReset();   /* 切换场景：小人回到左侧，由玩家 A/D 走到右侧 */
   $('scChoices').innerHTML = '';
   (o.choices||[]).forEach(c=>{
     const b = document.createElement('button');
@@ -477,7 +477,7 @@ function paintDlg(){
   }
   box.hidden = done;
   $('scChoices').style.display = done ? '' : 'none';
-  if(done) return;
+  if(done){ wkArmed = true; return; }   /* 对话读完：允许走到最右侧切换场景 */
   const t = DLG.lines[DLG.i];
   const sp = dlgSpeaker(t);
   box.innerHTML = '<div class="txt">'+(sp ? '<b class="spk">'+sp[0]+'</b>'+sp[1] : t)+'</div><i class="adv">▼</i>';
@@ -489,24 +489,17 @@ function dlgNext(){
   paintDlg();
 }
 
-/* ---------- 主角从左往右走入场景 ---------- */
-let walkTimer = null, wkBusy = false;
-function walkIn(){
+/* ---------- 切换场景：小人回到左侧待命，行走交给玩家 A/D ---------- */
+function wkReset(){
   const wk = $('walker');
   wk.style.backgroundImage = 'url(' + IMG.walker + ')';
-  wk.classList.remove('flip');
+  wk.classList.remove('flip', 'walk');
   wk.style.transition = 'none';
-  wk.classList.add('walk');
-  wk.style.left = '-14%';
-  void wk.offsetWidth;
-  wk.style.transition = 'left 2.6s linear';
-  wk.style.left = '26%';
-  if(walkTimer) clearTimeout(walkTimer);
-  wkBusy = true;
-  walkTimer = setTimeout(()=>{ wk.classList.remove('walk'); wkBusy = false; }, 2700);
+  wk.style.left = '12%';
+  wkArmed = true;
 }
 
-/* ---------- A / D 左右移动；走到最右侧触发下一段对话 ---------- */
+/* ---------- A / D 左右移动；对话读完后走到最右侧 → 切换下一场景 ---------- */
 const WK_KEYS = { l:false, r:false };
 let wkArmed = true;
 function wkPos(){ return parseFloat($('walker').style.left) || 0; }
@@ -522,18 +515,14 @@ document.addEventListener('keyup', e=>{
   if(k === 'd' || e.key === 'ArrowRight'){ WK_KEYS.r = false; }
 });
 function walkAdvance(){
-  if(!$('dlgBox').hidden){
-    dlgNext();
-    wkSet(12);            /* 回到左侧，走下一段 */
-    return;
-  }
+  /* 仅在对话全部读完（选项面板已出现）时生效：单一选项 = 走入下一场景 */
   const btns = Array.prototype.slice.call(document.querySelectorAll('#scChoices .choice')).filter(b=>!b.disabled);
-  if(btns.length === 1){ btns[0].click(); }   /* 单一选项 = 继续类，走入下一场景 */
+  if(btns.length === 1){ btns[0].click(); }
 }
 (function wkLoop(){
   setTimeout(wkLoop, 33);
   const wk = $('walker'); if(!wk) return;
-  if(!$('scene').classList.contains('active') || wkBusy) return;
+  if(!$('scene').classList.contains('active')) return;
   if($('pauseModal').classList.contains('open') || $('eventModal').classList.contains('open')) return;
   let v = wkPos(), moving = false;
   if(WK_KEYS.l){ v -= 1.4; moving = true; }
@@ -543,7 +532,7 @@ function walkAdvance(){
     wkSet(v);
     wk.classList.add('walk');
     wk.classList.toggle('flip', WK_KEYS.l && !WK_KEYS.r);
-    if(v >= 85 && wkArmed){ wkArmed = false; walkAdvance(); }
+    if(v >= 85 && wkArmed && $('dlgBox').hidden){ wkArmed = false; walkAdvance(); }
     else if(v < 80){ wkArmed = true; }
   } else {
     wk.classList.remove('walk');
