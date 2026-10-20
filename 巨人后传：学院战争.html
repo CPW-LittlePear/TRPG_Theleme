@@ -523,8 +523,9 @@ function sceneBgFor(o){
 function scene(o){
   show('scene');
   document.querySelector('#scene .stage').style.backgroundImage = 'url(' + sceneBgFor(o) + ')';
-  $('scCg').innerHTML        = o.cg ? cgHTML(o.cg, o.cgCap || '') : '';
-  $('scCg').hidden           = !o.cg;
+  const cgHtml = o.cg ? cgHTML(o.cg, o.cgCap || '') : '';
+  $('scCg').innerHTML        = cgHtml;
+  $('scCg').hidden           = !cgHtml;
   if(o.rail) paintRail(o.rail); else hideRail();
   paintSide();
   $('blackout').classList.remove('on');
@@ -759,8 +760,8 @@ const IMG = {
 
 /* ---------- 插画（CG 位）：优先像素素材，否则回退线描 SVG ---------- */
 function cgHTML(key, cap){
-  if(IMG[key]) return '<figure class="cg"><div class="cg-art pixel"><img src="'+IMG[key]+'" alt=""></div><figcaption>'+cap+'</figcaption></figure>';
-  return '<figure class="cg"><div class="cg-art"><svg viewBox="0 0 120 92" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(EMB[key]||'')+'</svg></div><figcaption>'+cap+'</figcaption></figure>';
+  if(IMG[key]) return '<figure class="cg"><div class="cg-art pixel"><img src="'+IMG[key]+'" alt=""></div></figure>';
+  return '';
 }
 
 /* ==========================================================================
