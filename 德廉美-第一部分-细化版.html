@@ -76,7 +76,8 @@ button{font:inherit;border:0;cursor:pointer;transition:.15s;background:none}
 .battle-stage{flex:1;min-height:0;display:grid;grid-template-columns:1fr minmax(300px,500px) 1fr;gap:clamp(12px,2vw,28px);align-items:stretch;padding:clamp(10px,1.8vh,20px) clamp(20px,3.5vw,48px)}
 .sprite{background:transparent;display:grid;place-items:center;color:#cbb27f;font-size:clamp(22px,2.6vw,36px);letter-spacing:.25em;writing-mode:vertical-rl;min-height:120px}
 .sprite span{pointer-events:none;text-shadow:1px 1px 0 #0007}
-.sprite.enemyph{background:#140e0859;border:2px dashed #d9b36a77}
+.sprite.enemyph{background:transparent;border:none}
+.sprite.enemyph img{filter:grayscale(1) brightness(.8) contrast(.95);opacity:.92;max-width:62%;max-height:62%}
 .sprite img{max-width:90%;max-height:90%;image-rendering:pixelated}
 .cg-art.pixel img{height:clamp(70px,11vh,110px);width:auto;max-width:100%;image-rendering:pixelated}
 .dice-cols{display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,1.4vw,18px);align-content:center}
@@ -279,7 +280,7 @@ button{font:inherit;border:0;cursor:pointer;transition:.15s;background:none}
           <div id="eCount" class="dice-count"><small>敌方</small>骰子数 0 枚</div>
         </div>
       </div>
-      <div class="sprite enemyph"><span>敌方立绘</span></div>
+      <div class="sprite enemyph" id="enSprite"><span>敌方立绘</span></div>
     </div>
     <div class="battle-foot">
       <div id="battleResult" class="result"></div>
@@ -670,6 +671,7 @@ let pending = null;
 function fight(o){
   show('battle');
   $('plSprite').innerHTML = '<img src="'+IMG.lead+'" alt="我方立绘">';
+  $('enSprite').innerHTML = '<img src="'+IMG.lead+'" alt="敌方立绘">';
   $('battleText').textContent = o.text;
   if(o.rail !== undefined) paintRail(o.rail);
   else if(F.stage) paintRail(F.stage);
