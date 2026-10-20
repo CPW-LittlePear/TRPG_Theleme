@@ -135,6 +135,15 @@ button{font:inherit;border:0;cursor:pointer;transition:.15s;background:none}
 .modal-card .actions{display:grid;grid-template-columns:1fr;gap:10px}
 .pz-sec{margin-bottom:14px}
 .pz-sec h4{font-size:13px;color:var(--mut);margin-bottom:8px;font-weight:normal;letter-spacing:.1em}
+
+/* ---------- 课堂演示面板 ---------- */
+#demoModal .demo-card{width:min(720px,100%)}
+#demoModal .demo-tip{margin-bottom:14px}
+#demoModal .demo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+#demoModal .demo-btn{background:#f6ecd4;color:#43301d;border:2px solid #6b4b2f;box-shadow:2px 2px 0 #00000045;text-align:left;padding:10px 12px}
+#demoModal .demo-btn:hover{background:#efe0c2}
+#demoModal .demo-btn b{font-weight:bold;font-size:clamp(13px,1.2vw,15px);color:#43301d}
+#demoModal .demo-btn span{display:block;font-size:clamp(11px,1vw,12px);color:#7a5c3a;margin-top:3px;line-height:1.5}
 .pz-log{background:#f4f4f4;padding:10px 12px;font:12px/1.9 ui-monospace,monospace;color:#444;max-height:160px;overflow-y:auto}
 .party{display:flex;flex-wrap:wrap;gap:6px}
 .party span{background:var(--chip);padding:3px 12px;font-size:12px}
@@ -198,6 +207,7 @@ button{font:inherit;border:0;cursor:pointer;transition:.15s;background:none}
     <p class="title-sub">德廉美修道院 · 第一部 · 无钟之地　——　FAY CE QUE VOULDRAS</p>
     <div class="title-menu">
       <button id="startBtn" type="button" class="title-button">开始游戏</button>
+      <button id="demoBtn" type="button" class="title-button">课堂演示</button>
       <button id="exitBtn" type="button" class="title-button">退出游戏</button>
     </div>
   </div>
@@ -293,6 +303,20 @@ button{font:inherit;border:0;cursor:pointer;transition:.15s;background:none}
       <button id="pzResume" type="button" class="choice"><b>继续游戏</b></button>
       <button id="pzRestart" type="button" class="choice"><b>重新开始</b></button>
       <button id="pzExit" type="button" class="choice"><b>退出到标题</b></button>
+    </div>
+  </div>
+</div>
+
+<!-- 课堂演示：章节跳转 / 结局预览 -->
+<div id="demoModal" class="modal">
+  <div class="modal-card demo-card">
+    <div class="sc-eyebrow">课堂演示</div>
+    <h2>章节跳转 &amp; 结局预览</h2>
+    <p class="demo-tip">跳转会重置进度并套用「演示档」数值，方便分段展示；结局可直接预览，无需打完整局。</p>
+    <div class="pz-sec"><h4>章节跳转</h4><div class="demo-grid" id="demoChapters"></div></div>
+    <div class="pz-sec"><h4>结局预览</h4><div class="demo-grid" id="demoEndings"></div></div>
+    <div class="actions">
+      <button id="demoClose" type="button" class="choice"><b>返回标题</b></button>
     </div>
   </div>
 </div>
@@ -1432,8 +1456,9 @@ function ending(n){
 function startGame(){ reset(); chapter('Prologue','德廉美','Thélème', ()=>pro(0)); }
 function exitGame(){
   document.querySelector('.title-inner h1').textContent = '下次再见';
-  document.querySelector('.title-menu').innerHTML = '<button type="button" class="title-button" id="returnBtn">返回标题</button>';
+  document.querySelector('.title-menu').innerHTML = '<button type="button" class="title-button" id="returnBtn">返回标题</button><button type="button" class="title-button" id="demoBtn2">课堂演示</button>';
   $('returnBtn').addEventListener('click', ()=>location.reload());
+  $('demoBtn2').addEventListener('click', openDemo);
 }
 /* ---------- 暂停 ---------- */
 function openPause(){
@@ -1449,6 +1474,76 @@ $('pzResume').addEventListener('click', ()=>$('pauseModal').classList.remove('op
 $('pzRestart').addEventListener('click', ()=>location.reload());
 $('pzExit').addEventListener('click', ()=>{ $('pauseModal').classList.remove('open'); show('intro'); });
 $('endGo').addEventListener('click', ()=>show('intro'));
+
+/* ==========================================================================
+   课堂演示：章节快速跳转 / 结局预览
+   跳转 = reset() + 演示档数值 + 对应入口；结局预览 = 演示数值直接 ending(n)
+   ========================================================================== */
+const DEMO_CH = [
+  { l:'Prologue · 德廉美', d:'序章：一个闪亮的酒壶', s:null, f:null,
+    go:()=>chapter('Prologue','德廉美','Thélème', ()=>pro(0)) },
+  { l:'Chapter I · 寻常一日', d:'一天七个时段的选择', s:null, f:null, go:runDay },
+  { l:'Chapter II · 饮酒于此', d:'葡萄园 · 圣徒瞻礼日',
+    s:{wisdom:300,strength:300,fame:300,drink:650}, f:{drinkRevealed:true}, go:runVineyard },
+  { l:'Chapter III · 无火起烟', d:'被涂毁的院训 → 教皇发兵',
+    s:{wisdom:350,strength:350,fame:450,drink:700}, f:{drinkRevealed:true}, go:runIncident },
+  { l:'Chapter III · 战备', d:'演示档声望 550：直接被推举为领袖',
+    s:{wisdom:400,strength:400,fame:550,drink:750}, f:{drinkRevealed:true}, go:runPrep },
+  { l:'Chapter IV · 第一场', d:'列阵交锋 · 香肠人来袭',
+    s:{wisdom:400,strength:400,fame:600,drink:800}, f:{drinkRevealed:true}, go:war1 },
+  { l:'Chapter IV · 第二场', d:'酒桶计 · 渡河交涉（智识判定）',
+    s:{wisdom:400,strength:400,fame:600,drink:800}, f:{drinkRevealed:true}, go:war2 },
+  { l:'Chapter IV · 第三场', d:'抵抗大轰炸 · 工匠区',
+    s:{wisdom:400,strength:400,fame:600,drink:800}, f:{drinkRevealed:true}, go:war3 },
+  { l:'Chapter IV · 第四场', d:'战报 · 夜袭圣弗洛朗',
+    s:{wisdom:400,strength:400,fame:600,drink:800}, f:{drinkRevealed:true}, go:war4 },
+  { l:'Chapter V · 酒与钟', d:'决战 · 虔信的巨人',
+    s:{wisdom:450,strength:450,fame:650,drink:850}, f:{drinkRevealed:true}, go:war5 },
+  { l:'条件事件 · 玛格丽特的离开', d:'分支演示：女修与马群一夜出走',
+    s:{wisdom:400,strength:400,fame:600,drink:800}, f:{drinkRevealed:true,duel:'no',margaSorty:1}, go:war3Margaret }
+];
+const DEMO_END = [
+  { n:1, t:'酒是甘美的夏夜', c:'触发条件：第一章结束时酒量 ≥ 1000' },
+  { n:2, t:'酒与血的祭奠', c:'触发条件：决战中落败' },
+  { n:3, t:'无尽的祷告', c:'触发条件：最终判定败于「虔信的巨人」' },
+  { n:4, t:'责任之始', c:'触发条件：获胜后接过德廉美徽章' }
+];
+function openDemo(){ $('demoModal').classList.add('open'); }
+function buildDemo(){
+  const cbox = $('demoChapters');
+  DEMO_CH.forEach(d=>{
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'choice demo-btn';
+    b.innerHTML = '<b>'+d.l+'</b><span>'+d.d+'</span>';
+    b.addEventListener('click', ()=>{
+      reset();
+      if(d.s) Object.assign(S, d.s);
+      if(d.f) Object.assign(F, d.f);
+      say('课堂演示：跳转至 ' + d.l);
+      $('demoModal').classList.remove('open');
+      d.go();
+    });
+    cbox.appendChild(b);
+  });
+  const ebox = $('demoEndings');
+  DEMO_END.forEach(e=>{
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'choice demo-btn';
+    b.innerHTML = '<b>End ' + e.n + ' · ' + e.t + '</b><span>' + e.c + '</span>';
+    b.addEventListener('click', ()=>{
+      reset();
+      Object.assign(S, {wisdom:500,strength:500,fame:700,drink:900});
+      F.drinkRevealed = true;
+      say('课堂演示：预览结局「' + e.t + '」');
+      $('demoModal').classList.remove('open');
+      ending(e.n);
+    });
+    ebox.appendChild(b);
+  });
+}
+buildDemo();
+$('demoBtn').addEventListener('click', openDemo);
+$('demoClose').addEventListener('click', ()=>$('demoModal').classList.remove('open'));
 $('startBtn').addEventListener('click', startGame);
 $('exitBtn').addEventListener('click', exitGame);
 document.addEventListener('keydown', e=>{
