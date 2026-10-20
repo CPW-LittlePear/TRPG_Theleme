@@ -151,16 +151,13 @@ button{font:inherit;border:0;cursor:pointer;transition:.15s;background:none}
 #scene .walker.walk{animation:walkstep .5s linear infinite}
 @keyframes walkstep{0%{background-position:0 0}49.9%{background-position:0 0}50%{background-position:100% 0}100%{background-position:100% 0}}
 #scene .walker.flip{transform:scaleX(1)}
-#scene .hud-hint{position:absolute;top:20.5%;left:3.2%;z-index:5;color:#ffe9b0b0;font-size:clamp(11px,1vw,13px);text-shadow:1px 1px 0 #0008;pointer-events:none;letter-spacing:.05em}
+#scene .hud-hint{position:absolute;top:13%;left:3.2%;z-index:5;color:#ffe9b0b0;font-size:clamp(11px,1vw,13px);text-shadow:1px 1px 0 #0008;pointer-events:none;letter-spacing:.05em}
 
 /* ===== 场景页（画框场景 + 板上对话框） ===== */
 #scene{background:#131313}
 #scene .stage{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100%,calc(100vh*16/9));height:min(100%,calc(100vw*9/16));background-size:100% 100%;background-repeat:no-repeat}
 #scene .hud{position:absolute;top:2.2%;left:2.4%;right:2.4%;display:flex;justify-content:space-between;align-items:flex-start;z-index:6}
 #scene .chip-btn,#scene .stat-chip{opacity:.93}
-#scene .hud-title{position:absolute;top:12.5%;left:3.2%;z-index:5;pointer-events:none}
-#scene .hud-title .sc-eyebrow{color:#ffe9b0;text-shadow:1px 1px 0 #0007}
-#scene .hud-title .sc-title{font-size:clamp(20px,2.4vw,32px);font-weight:bold;color:#fff8ea;text-shadow:2px 2px 0 #0007;margin-top:4px}
 #scene .war-rail{position:absolute;top:2.4%;left:50%;transform:translateX(-50%);width:50%;margin:0;z-index:5}
 #scene .war-rail .rail-node{background:#f7f2e4f0;border-color:#a8874f}
 #scene .hud-cg{position:absolute;left:3.2%;top:31%;z-index:4;pointer-events:none}
@@ -221,10 +218,6 @@ button{font:inherit;border:0;cursor:pointer;transition:.15s;background:none}
       <div id="sceneStats" class="chips"></div>
     </div>
     <div id="warRail" class="war-rail" hidden></div>
-    <div class="hud-title">
-      <div class="sc-eyebrow" id="scEyebrow"></div>
-      <div class="sc-title" id="scTitle"></div>
-    </div>
     <div class="hud-hint">A / D 或 ← → 移动　·　走到最右侧继续</div>
     <div id="scCg" class="hud-cg" hidden></div>
     <div id="walker" class="walker"></div>
@@ -439,8 +432,6 @@ function dlgSpeaker(t){
 }
 function scene(o){
   show('scene');
-  $('scEyebrow').textContent = (o.eyebrow || '') + (o.tag ? '　·　' + o.tag : '');
-  $('scTitle').textContent   = o.title || '';
   $('scCg').innerHTML        = o.cg ? cgHTML(o.cg, o.cgCap || '') : '';
   $('scCg').hidden           = !o.cg;
   if(o.rail) paintRail(o.rail); else hideRail();
