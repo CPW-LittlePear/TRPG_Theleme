@@ -654,23 +654,15 @@ function walkAdvance(){
   }
 })();
 
-/* ---------- 通用弹窗 ---------- */
+/* ---------- 通用事件：改为对话框形式（逐句推进，结尾出选项） ---------- */
 function modal(title, text, eyebrow, actions){
-  $('modalEyebrow').textContent = eyebrow || '读条';
-  $('modalTitle').textContent = title;
-  $('modalText').textContent = text;
-  const box = $('modalActions'); box.innerHTML = '';
-  actions.forEach(a=>{
-    const b = document.createElement('button');
-    b.type='button'; b.className='choice';
-    b.innerHTML = '<b>'+a.label+'</b><span>'+(a.desc||'')+'</span>';
-    b.addEventListener('click', ()=>{
-      $('eventModal').classList.remove('open');
-      add(a.eff); if(a.note) say(a.note); paintSide(); a.go && a.go();
-    });
-    box.appendChild(b);
+  const lines = String(text).split(/\n+/).map(s=>s.trim()).filter(Boolean);
+  scene({
+    eyebrow: (eyebrow || '事件') + ' · ' + title,
+    title: title, tag: '', rail: F.stage,
+    text: ['【' + (eyebrow || '事件') + ' · ' + title + '】'].concat(lines),
+    choices: actions.map(a=>({label:a.label, desc:a.desc||'', eff:a.eff, note:a.note, go:a.go}))
   });
-  $('eventModal').classList.add('open');
 }
 
 /* ---------- 战斗（独立页：我方/敌方立绘 + 中间骰子区） ---------- */
