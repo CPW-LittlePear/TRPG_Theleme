@@ -193,7 +193,7 @@ button{font:inherit;border:0;cursor:pointer;transition:.15s;background:none}
 #scene .dlg .stg{color:#c9b98f}
 #scene .dlg b.spk{display:block;color:#ffd98a;font-size:clamp(15px,1.45vw,19px);margin-bottom:6px;letter-spacing:.06em}
 #scene .dlg .adv{position:absolute;right:3%;bottom:2%;color:#ffe9b0;font-style:normal;font-size:14px;animation:bob .9s infinite alternate}
-#scene .bpanel{position:absolute;inset:6% 6.5% 9% 6.5%;display:flex;flex-direction:column;justify-content:center;gap:clamp(8px,1.6vh,14px);overflow-y:auto}
+#scene .bpanel{position:absolute;left:14%;right:14%;top:13%;height:36%;display:flex;flex-direction:column;justify-content:center;gap:clamp(8px,1.6vh,14px);overflow-y:auto;z-index:4}
 #scene .choice{background:var(--art-choice,#43301d) center/100% 100% no-repeat;color:#f6ecd4;border:0;box-shadow:0 3px 0 #00000045;text-align:center}
 #scene .choice b{color:#ffd98a;font-weight:bold}
 #scene .choice span{color:#c9b98f}
@@ -250,9 +250,9 @@ button{font:inherit;border:0;cursor:pointer;transition:.15s;background:none}
     <div id="scCg" class="hud-cg" hidden></div>
     <div id="scLead" class="sc-lead"></div>
     <div id="walker" class="walker"></div>
+    <div id="scChoices" class="bpanel"></div>
     <div class="board">
       <div id="dlgBox" class="dlg" hidden></div>
-      <div id="scChoices" class="bpanel"></div>
     </div>
     <div id="blackout"></div>
   </div>
