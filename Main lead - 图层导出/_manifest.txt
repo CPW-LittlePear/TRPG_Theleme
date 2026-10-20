@@ -1,0 +1,83 @@
+001_Paper.png	offset=(0,0)	size=1600x900	visible
+002_Layer 2 (hidden).png	offset=(590,110)	size=390x690	hidden
+003_Skinbase - Skinbase front side (hidden).png	offset=(610,110)	size=350x690	hidden
+004_Skinbase - Skinbase backside (hidden).png	offset=(610,110)	size=350x690	hidden
+005_Skinbase - Skinbase leftside (hidden).png	offset=(640,110)	size=290x690	hidden
+006_Skinbase - Skinbase leftside walk 1 (hidden).png	offset=(640,110)	size=290x690	hidden
+007_Skinbase - Skinbase leftside walk 2 (hidden).png	offset=(640,110)	size=290x690	hidden
+008_Skinbase - Skinbase rightside (hidden).png	offset=(640,110)	size=290x690	hidden
+009_Skinbase - Skinbase rightside walk 2 Copy (hidden).png	offset=(640,110)	size=290x690	hidden
+010_Skinbase - Skinbase rightside walk 1 Copy.png	offset=(640,110)	size=290x690	visible
+011_eye - front blue (hidden).png	offset=(700,230)	size=170x70	hidden
+012_eye - front green (hidden).png	offset=(700,230)	size=170x70	hidden
+013_eye - front brown (hidden).png	offset=(700,230)	size=170x70	hidden
+014_eye - nothing (hidden).png	offset=(0,0)	size=10x10	hidden
+015_eye - left blue (hidden).png	offset=(820,230)	size=50x70	hidden
+016_eye - left green (hidden).png	offset=(820,230)	size=50x70	hidden
+017_eye - left brown (hidden).png	offset=(820,230)	size=50x70	hidden
+018_eye - nothing (hidden).png	offset=(0,0)	size=10x10	hidden
+019_eye - right blue (hidden).png	offset=(700,230)	size=50x70	hidden
+020_eye - right green (hidden).png	offset=(700,230)	size=50x70	hidden
+021_eye - right brown (hidden).png	offset=(700,230)	size=50x70	hidden
+022_eyebrow - front flat (hidden).png	offset=(710,210)	size=150x10	hidden
+023_eyebrow - front angry (hidden).png	offset=(700,200)	size=170x20	hidden
+024_eyebrow - front sad (hidden).png	offset=(700,200)	size=170x20	hidden
+025_eyebrow - nothing (hidden).png	offset=(0,0)	size=10x10	hidden
+026_eyebrow - left flat (hidden).png	offset=(830,210)	size=30x10	hidden
+027_eyebrow - left angry (hidden).png	offset=(820,200)	size=50x20	hidden
+028_eyebrow - left sad (hidden).png	offset=(820,200)	size=50x20	hidden
+029_eyebrow - nothing (hidden).png	offset=(0,0)	size=10x10	hidden
+030_eyebrow - right flat (hidden).png	offset=(710,210)	size=30x10	hidden
+031_eyebrow - right angry (hidden).png	offset=(700,200)	size=50x20	hidden
+032_eyebrow - right sad (hidden).png	offset=(700,200)	size=50x20	hidden
+033_mouth - front flat (hidden).png	offset=(770,320)	size=30x10	hidden
+034_mouth - front smile (hidden).png	offset=(760,310)	size=50x20	hidden
+035_mouth - front grumpy (hidden).png	offset=(770,310)	size=30x20	hidden
+036_mouth - nothing (hidden).png	offset=(0,0)	size=10x10	hidden
+037_mouth - left flat (hidden).png	offset=(870,320)	size=30x10	hidden
+038_mouth - left smile (hidden).png	offset=(860,310)	size=50x20	hidden
+039_mouth - left grumpy (hidden).png	offset=(880,310)	size=30x20	hidden
+040_mouth - noting (hidden).png	offset=(0,0)	size=10x10	hidden
+041_mouth - right flat (hidden).png	offset=(660,320)	size=30x10	hidden
+042_mouth - right smile (hidden).png	offset=(660,310)	size=50x20	hidden
+043_mouth - right grumpy (hidden).png	offset=(660,310)	size=30x20	hidden
+044_robe - front red (hidden).png	offset=(600,350)	size=370x390	hidden
+045_robe - front blue (hidden).png	offset=(600,350)	size=370x390	hidden
+046_robe - front beidge (hidden).png	offset=(600,350)	size=370x390	hidden
+047_robe - nothing.png	offset=(0,0)	size=10x10	visible
+048_robe - left red (hidden).png	offset=(650,360)	size=270x380	hidden
+049_robe - left blue (hidden).png	offset=(650,360)	size=270x380	hidden
+050_robe - left beidge.png	offset=(650,360)	size=270x380	visible
+051_robe - nothing (hidden).png	offset=(0,0)	size=10x10	hidden
+052_robe - right red (hidden).png	offset=(650,360)	size=270x380	hidden
+053_robe - right blue (hidden).png	offset=(650,360)	size=270x380	hidden
+054_robe - right beidge (hidden).png	offset=(650,360)	size=270x380	hidden
+055_robe - nothing (hidden).png	offset=(0,0)	size=10x10	hidden
+056_robe - black red (hidden).png	offset=(600,350)	size=370x390	hidden
+057_robe - back blue (hidden).png	offset=(600,350)	size=370x390	hidden
+058_robe - back beidge (hidden).png	offset=(600,350)	size=370x390	hidden
+059_robe - nothing.png	offset=(0,0)	size=10x10	visible
+060_robe - wine for front and right (hidden).png	offset=(650,520)	size=290x130	hidden
+061_robe - wine for back and left (hidden).png	offset=(650,590)	size=270x20	hidden
+062_robe - ]robe pattern fix (hidden).png	offset=(660,660)	size=250x40	hidden
+063_hair - front hair 1 (hidden).png	offset=(640,80)	size=290x170	hidden
+064_hair - back hair 1 (hidden).png	offset=(640,80)	size=290x270	hidden
+065_hair - left hair 1 (hidden).png	offset=(640,80)	size=290x230	hidden
+066_hair - right hair 1 (hidden).png	offset=(640,80)	size=290x230	hidden
+067_hair - nothing (hidden).png	offset=(0,0)	size=10x10	hidden
+068_hair - front hair 2 (hidden).png	offset=(650,80)	size=270x170	hidden
+069_hair - back hair 2 (hidden).png	offset=(650,80)	size=270x270	hidden
+070_hair - left hair 2 (hidden).png	offset=(650,80)	size=270x270	hidden
+071_hair - right hair 2 (hidden).png	offset=(650,80)	size=270x270	hidden
+072_hair - nothing (hidden).png	offset=(0,0)	size=10x10	hidden
+073_hair - front hair 3 (hidden).png	offset=(660,100)	size=250x250	hidden
+074_hair - back hair 3 (hidden).png	offset=(660,100)	size=250x250	hidden
+075_hair - left hair 3 (hidden).png	offset=(650,100)	size=260x250	hidden
+076_hair - right hair 3 (hidden).png	offset=(650,100)	size=260x250	hidden
+077_scene 1 - background (hidden).png	offset=(0,0)	size=1600x900	hidden
+078_scene 1 - game frame gold (hidden).png	offset=(0,0)	size=1600x900	hidden
+079_scene 1 - grape vines (hidden).png	offset=(0,0)	size=1600x900	hidden
+080_scene 1 - Dialogue board (hidden).png	offset=(150,480)	size=1280x400	hidden
+081_scene 1 - filter (hidden).png	offset=(0,0)	size=1600x900	hidden
+082_right hand uppest layer (hidden).png	offset=(800,620)	size=90x30	hidden
+083_left hand uppest layer (hidden).png	offset=(680,620)	size=90x30	hidden
