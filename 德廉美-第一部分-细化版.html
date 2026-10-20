@@ -146,6 +146,8 @@ button{font:inherit;border:0;cursor:pointer;transition:.15s;background:none}
 #scene .walker{position:absolute;bottom:47%;left:-14%;height:46%;aspect-ratio:290/720;background-size:200% 100%;background-repeat:no-repeat;image-rendering:pixelated;z-index:3;transition:left 2.6s linear;filter:drop-shadow(3px 3px 0 #00000030)}
 #scene .walker.walk{animation:walkstep .5s linear infinite}
 @keyframes walkstep{0%{background-position:0 0}49.9%{background-position:0 0}50%{background-position:100% 0}100%{background-position:100% 0}}
+#scene .walker.flip{transform:scaleX(-1)}
+#scene .hud-hint{position:absolute;top:20.5%;left:3.2%;z-index:5;color:#ffe9b0b0;font-size:clamp(11px,1vw,13px);text-shadow:1px 1px 0 #0008;pointer-events:none;letter-spacing:.05em}
 
 /* ===== 场景页（画框场景 + 板上对话框） ===== */
 #scene{background:#131313}
@@ -217,6 +219,7 @@ button{font:inherit;border:0;cursor:pointer;transition:.15s;background:none}
       <div class="sc-eyebrow" id="scEyebrow"></div>
       <div class="sc-title" id="scTitle"></div>
     </div>
+    <div class="hud-hint">A / D 或 ← → 移动　·　走到最右侧继续</div>
     <div id="scCg" class="hud-cg" hidden></div>
     <div id="walker" class="walker"></div>
     <div class="board">
@@ -471,10 +474,11 @@ function dlgNext(){
 }
 
 /* ---------- 主角从左往右走入场景 ---------- */
-let walkTimer = null;
+let walkTimer = null, wkBusy = false;
 function walkIn(){
   const wk = $('walker');
   wk.style.backgroundImage = 'url(' + IMG.walker + ')';
+  wk.classList.remove('flip');
   wk.style.transition = 'none';
   wk.classList.add('walk');
   wk.style.left = '-14%';
@@ -482,8 +486,53 @@ function walkIn(){
   wk.style.transition = 'left 2.6s linear';
   wk.style.left = '26%';
   if(walkTimer) clearTimeout(walkTimer);
-  walkTimer = setTimeout(()=>wk.classList.remove('walk'), 2700);
+  wkBusy = true;
+  walkTimer = setTimeout(()=>{ wk.classList.remove('walk'); wkBusy = false; }, 2700);
 }
+
+/* ---------- A / D 左右移动；走到最右侧触发下一段对话 ---------- */
+const WK_KEYS = { l:false, r:false };
+let wkArmed = true;
+function wkPos(){ return parseFloat($('walker').style.left) || 0; }
+function wkSet(v){ const wk = $('walker'); wk.style.transition = 'none'; wk.style.left = v + '%'; }
+document.addEventListener('keydown', e=>{
+  const k = (e.key || '').toLowerCase();
+  if(k === 'a' || e.key === 'ArrowLeft'){ WK_KEYS.l = true; e.preventDefault(); }
+  if(k === 'd' || e.key === 'ArrowRight'){ WK_KEYS.r = true; e.preventDefault(); }
+});
+document.addEventListener('keyup', e=>{
+  const k = (e.key || '').toLowerCase();
+  if(k === 'a' || e.key === 'ArrowLeft'){ WK_KEYS.l = false; }
+  if(k === 'd' || e.key === 'ArrowRight'){ WK_KEYS.r = false; }
+});
+function walkAdvance(){
+  if(!$('dlgBox').hidden){
+    dlgNext();
+    wkSet(12);            /* 回到左侧，走下一段 */
+    return;
+  }
+  const btns = Array.prototype.slice.call(document.querySelectorAll('#scChoices .choice')).filter(b=>!b.disabled);
+  if(btns.length === 1){ btns[0].click(); }   /* 单一选项 = 继续类，走入下一场景 */
+}
+(function wkLoop(){
+  setTimeout(wkLoop, 33);
+  const wk = $('walker'); if(!wk) return;
+  if(!$('scene').classList.contains('active') || wkBusy) return;
+  if($('pauseModal').classList.contains('open') || $('eventModal').classList.contains('open')) return;
+  let v = wkPos(), moving = false;
+  if(WK_KEYS.l){ v -= 1.4; moving = true; }
+  if(WK_KEYS.r){ v += 1.4; moving = true; }
+  if(moving){
+    v = Math.max(-2, Math.min(88, v));
+    wkSet(v);
+    wk.classList.add('walk');
+    wk.classList.toggle('flip', WK_KEYS.l && !WK_KEYS.r);
+    if(v >= 85 && wkArmed){ wkArmed = false; walkAdvance(); }
+    else if(v < 80){ wkArmed = true; }
+  } else {
+    wk.classList.remove('walk');
+  }
+})();
 
 /* ---------- 通用弹窗 ---------- */
 function modal(title, text, eyebrow, actions){
